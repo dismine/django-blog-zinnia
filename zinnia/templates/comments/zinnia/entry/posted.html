@@ -1,14 +1,14 @@
 {% extends "zinnia/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Thanks for your comment" %}{% endblock title %}
+{% block title %}{% translate "Thanks for your comment" %}{% endblock title %}
 
 {% block body-class %}comment-posted{% endblock body-class %}
 
 {% block content %}
-<h2>{% trans "Thanks for your comment" %}</h2>
+<h2>{% translate "Thanks for your comment" %}</h2>
 
-<p>{% trans "Your comment needs to be approved before getting displayed." %}</p>
+<p>{% translate "Your comment needs to be approved before getting displayed." %}</p>
 
 <ul>
   {% if comment %}
@@ -16,15 +16,15 @@
     {% with entry=comment.content_object %}
     <a href="{{ entry.get_absolute_url }}"
        title="{{ entry.title }}">
-      {% blocktrans with title=entry.title %}Back to {{ title }}{% endblocktrans %}
+      {% blocktranslate with title=entry.title %}Back to {{ title }}{% endblocktranslate %}
     </a>
     {% endwith %}
   </li>
   {% endif %}
   <li>
     <a href="{% url 'zinnia:entry_archive_index' %}"
-       title="{% trans "Return to entry list" %}">
-      {% trans "Return to entry list" %}
+       title="{% translate "Return to entry list" %}">
+      {% translate "Return to entry list" %}
     </a>
   </li>
 </ul>

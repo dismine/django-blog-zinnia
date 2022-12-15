@@ -2,11 +2,11 @@
 <div id="quickpost" class="module">
   <form method="post" action="{% url 'zinnia:entry_quick_post' %}">
     {% csrf_token %}
-    <table summary="{% trans "Quick publishing" %}">
-      <caption>{% trans "Quick publishing" %}</caption>
+    <table summary="{% translate "Quick publishing" %}">
+      <caption>{% translate "Quick publishing" %}</caption>
       <tr>
         <th>
-          <label for="id_title" class="required">{% trans "Title" %}:</label>
+          <label for="id_title" class="required">{% translate "Title" %}:</label>
         </th>
         <td>
           <input name="title" class="vTextField" maxlength="255" id="id_title" type="text" />
@@ -14,7 +14,7 @@
       </tr>
       <tr>
         <th>
-          <label for="id_content" class="required">{% trans "Content" %}:</label>
+          <label for="id_content" class="required">{% translate "Content" %}:</label>
         </th>
         <td>
           <textarea id="id_content" rows="7" cols="40" name="content" class="vLargeTextField"></textarea>
@@ -22,7 +22,7 @@
       </tr>
       <tr>
         <th>
-          <label for="id_tags">{% trans "Tags" %}:</label>
+          <label for="id_tags">{% translate "Tags" %}:</label>
         </th>
         <td>
           <input name="tags" class="vTextField" maxlength="255" id="id_tags" type="text" />
@@ -30,8 +30,8 @@
       </tr>
       <tr>
         <td colspan="2">
-          <input type="submit" value="{% trans "Save as draft" %}" name="save_draft" class="button" />
-          <input type="submit" value="{% trans "Publish" %}" class="default" name="save" />
+          <input type="submit" value="{% translate "Save as draft" %}" name="save_draft" class="button" />
+          <input type="submit" value="{% translate "Publish" %}" class="default" name="save" />
         </td>
       </tr>
     </table>

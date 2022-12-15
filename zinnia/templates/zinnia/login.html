@@ -1,20 +1,20 @@
 {% extends "zinnia/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Login required" %}{% endblock title %}
+{% block title %}{% translate "Login required" %}{% endblock title %}
 
 {% block body-class %}login-required{% endblock body-class %}
 
 {% block content %}
-<h1>{% trans "Login required" %}</h1>
+<h1>{% translate "Login required" %}</h1>
 
 {% if form.errors %}
 <p class="error">
-  {% trans "Your username and password didn't match. Please try again." %}
+  {% translate "Your username and password didn't match. Please try again." %}
 </p>
 {% endif %}
 <p>
-  {% trans "You need to be connected to view this entry." %}
+  {% translate "You need to be connected to view this entry." %}
 </p>
 
 <form method="post" action=".">
@@ -31,7 +31,7 @@
     <tr>
       <td colspan="2">
         <input type="hidden" name="next" value="." />
-        <input type="submit" value="{% trans "Login" %}" />
+        <input type="submit" value="{% translate "Login" %}" />
       </td>
     </tr>
   </table>

@@ -3,9 +3,9 @@
 
 {% block module_id %}comments{% endblock module_id %}
 
-{% block summary %}{% trans "Recent comments" %}{% endblock summary %}
+{% block summary %}{% translate "Recent comments" %}{% endblock summary %}
 
-{% block title %}{% trans "Recent comments" %}{% endblock title %}
+{% block title %}{% translate "Recent comments" %}{% endblock title %}
 
 {% block content %}
   {% get_recent_comments template="admin/zinnia/widgets/_recent_comments.html" %}

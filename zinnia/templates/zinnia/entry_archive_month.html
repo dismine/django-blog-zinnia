@@ -1,19 +1,19 @@
 {% extends "zinnia/entry_list.html" %}
 {% load i18n %}
 
-{% block meta-description %}{% trans "Archives" %} {{ month|date:"YEAR_MONTH_FORMAT" }}{% endblock meta-description %}
+{% block meta-description %}{% translate "Archives" %} {{ month|date:"YEAR_MONTH_FORMAT" }}{% endblock meta-description %}
 
-{% block title %}{% trans "Archives" %} {{ month|date:"YEAR_MONTH_FORMAT" }}{% endblock title %}
+{% block title %}{% translate "Archives" %} {{ month|date:"YEAR_MONTH_FORMAT" }}{% endblock title %}
 
 {% block body-class %}{{ block.super }} archive date month year-{{ month|date:"Y" }} month-{{ month|date:"m" }}{% endblock body-class %}
 
 {% block content-title %}
-<h1>{% trans "Archives" %} {{ month|date:"YEAR_MONTH_FORMAT" }}</h1>
+<h1>{% translate "Archives" %} {{ month|date:"YEAR_MONTH_FORMAT" }}</h1>
 {% endblock content-title %}
 
 {% block content-related %}
 {% if date_list %}
-<h2>{% trans "Daily archives" %}</h2>
+<h2>{% translate "Daily archives" %}</h2>
 <ul>
   {% for date in date_list %}
   <li>
@@ -23,18 +23,18 @@
 </ul>
 {% endif %}
 {% if previous_month %}
-<h3>{% trans "Previous month" %}</h3>
+<h3>{% translate "Previous month" %}</h3>
 <p>
   <a href="{% url 'zinnia:entry_archive_month' previous_month|date:"Y" previous_month|date:"m" %}" rel="archives">{{ previous_month|date:"YEAR_MONTH_FORMAT" }}</a>
 </p>
 {% endif %}
 {% if next_month %}
-<h3>{% trans "Next month" %}</h3>
+<h3>{% translate "Next month" %}</h3>
 <p>
   <a href="{% url 'zinnia:entry_archive_month' next_month|date:"Y" next_month|date:"m" %}" rel="archives">{{ next_month|date:"YEAR_MONTH_FORMAT" }}</a>
 </p>
 {% endif %}
-<h3>{% trans "Archives" %}</h3>
+<h3>{% translate "Archives" %}</h3>
 <ul>
   <li>
     <a href="{% url 'zinnia:entry_archive_year' month|date:"Y" %}" rel="archives">{{ month|date:"Y" }}</a>

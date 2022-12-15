@@ -4,8 +4,8 @@
   {% recursetree categories %}
   <li{% if node.slug == context_category.slug %} class="current">{% else %}>{% endif %}
     <a href="{{ node.get_absolute_url }}"
-       title="{% blocktrans with category=node %}Show all entries in {{ category }}{% endblocktrans %}">{{ node }}</a>
-    {% blocktrans count entry_count=node.count_entries %}{{ entry_count }} entry{% plural %}{{ entry_count }} entries{% endblocktrans %}
+       title="{% blocktranslate with category=node %}Show all entries in {{ category }}{% endblocktranslate %}">{{ node }}</a>
+    {% blocktranslate count entry_count=node.count_entries %}{{ entry_count }} entry{% plural %}{{ entry_count }} entries{% endblocktranslate %}
     {% if not node.is_leaf_node %}
     <ul class="category-children category-{{ node.slug }}">
       {{ children }}
@@ -15,7 +15,7 @@
   {% endrecursetree %}
   {% if not categories %}
   <li>
-    {% trans "No categories yet." %}
+    {% translate "No categories yet." %}
   </li>
   {% endif %}
 </ul>

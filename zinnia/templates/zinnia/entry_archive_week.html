@@ -2,20 +2,20 @@
 {% load i18n %}
 {% load zinnia %}
 
-{% block meta-description %}{% blocktrans with year=week|date:"Y" week_number=week|week_number %}Archives week {{ week_number }} of {{ year }}{% endblocktrans %}{% endblock meta-description %}
+{% block meta-description %}{% blocktranslate with year=week|date:"Y" week_number=week|week_number %}Archives week {{ week_number }} of {{ year }}{% endblocktranslate %}{% endblock meta-description %}
 
-{% block title %}{% blocktrans with year=week|date:"Y" week_number=week|week_number %}Archives week {{ week_number }} of {{ year }}{% endblocktrans %}{% endblock title %}
+{% block title %}{% blocktranslate with year=week|date:"Y" week_number=week|week_number %}Archives week {{ week_number }} of {{ year }}{% endblocktranslate %}{% endblock title %}
 
 {% block body-class %}{{ block.super }} archive date week year-{{ week|date:"Y" }} month-{{ week|date:"m" }} week-{{ week|week_number }}{% endblock body-class %}
 
 {% block content-title %}
-<h1>{% blocktrans with year=week|date:"Y" week_number=week|week_number %}Archives week {{ week_number }} of {{ year }}{% endblocktrans %}</h1>
+<h1>{% blocktranslate with year=week|date:"Y" week_number=week|week_number %}Archives week {{ week_number }} of {{ year }}{% endblocktranslate %}</h1>
 <h2>{{ week|date:"DATE_FORMAT" }} - {{ week_end_day|date:"DATE_FORMAT" }}</h2>
 {% endblock content-title %}
 
 {% block content-related %}
 {% if date_list %}
-<h2>{% trans "Daily archives" %}</h2>
+<h2>{% translate "Daily archives" %}</h2>
 <ul>
   {% for date in date_list %}
   <li>
@@ -25,22 +25,22 @@
 </ul>
 {% endif %}
 {% if previous_week %}
-<h3>{% trans "Previous week" %}</h3>
+<h3>{% translate "Previous week" %}</h3>
 <p>
   <a href="{% url 'zinnia:entry_archive_week' previous_week|date:"Y" previous_week|week_number %}" rel="archives">
-    {% blocktrans with year=previous_week|date:"Y" week_number=previous_week|week_number %}Week {{ week_number }} of {{ year }}{% endblocktrans %}
+    {% blocktranslate with year=previous_week|date:"Y" week_number=previous_week|week_number %}Week {{ week_number }} of {{ year }}{% endblocktranslate %}
   </a>
 </p>
 {% endif %}
 {% if next_week %}
-<h3>{% trans "Next week" %}</h3>
+<h3>{% translate "Next week" %}</h3>
 <p>
   <a href="{% url 'zinnia:entry_archive_week' next_week|date:"Y" next_week|week_number %}" rel="archives">
-    {% blocktrans with year=next_week|date:"Y" week_number=next_week|week_number %}Week {{ week_number }} of {{ year }}{% endblocktrans %}
+    {% blocktranslate with year=next_week|date:"Y" week_number=next_week|week_number %}Week {{ week_number }} of {{ year }}{% endblocktranslate %}
   </a>
 </p>
 {% endif %}
-<h3>{% trans "Archives" %}</h3>
+<h3>{% translate "Archives" %}</h3>
 <ul>
   <li>
     <a href="{% url 'zinnia:entry_archive_year' week|date:"Y" %}" rel="archives">{{ week|date:"Y" }}</a>

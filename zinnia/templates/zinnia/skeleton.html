@@ -7,7 +7,7 @@
     <title>{% block title %}{% endblock title %}{% block title-page %}{% endblock title-page %} - Zinnia's Weblog</title>
     <meta name="robots" content="follow, all" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="{% block meta-description %}{% trans "Just another Zinnia weblog." %}{% endblock meta-description %}{% block meta-description-page %}{% endblock meta-description-page %}" />
+    <meta name="description" content="{% block meta-description %}{% translate "Just another Zinnia weblog." %}{% endblock meta-description %}{% block meta-description-page %}{% endblock meta-description-page %}" />
     <meta name="keywords" content="{% block meta-keywords %}django, blog, weblog, zinnia{% endblock meta-keywords %}" />
     <meta name="author" content="Fantomas42" />
     {% block meta %}{% endblock meta %}
@@ -28,20 +28,20 @@
         <nav>
           <ul class="top-navigation">
             <li>
-              <a href="{% url 'zinnia:sitemap' %}" title="{% trans "Sitemap" %}" class="sitemap" rel="sitemap">
-                {% trans "Sitemap" %}
+              <a href="{% url 'zinnia:sitemap' %}" title="{% translate "Sitemap" %}" class="sitemap" rel="sitemap">
+                {% translate "Sitemap" %}
               </a>
             </li>
             <li>
-              <a href="{% url 'zinnia:entry_feed' %}" title="{% trans "RSS feed of last entries" %}" class="feeds">
-                {% trans "RSS feed" %}
+              <a href="{% url 'zinnia:entry_feed' %}" title="{% translate "RSS feed of last entries" %}" class="feeds">
+                {% translate "RSS feed" %}
               </a>
             </li>
           </ul>
         </nav>
         <form method="get" action="{% url 'zinnia:entry_search' %}">
           <p>
-            <input type="text" name="pattern" placeholder="{% trans "Keywords..." %}" {% if pattern %}value="{{ pattern }}"{% endif %} />
+            <input type="text" name="pattern" placeholder="{% translate "Keywords..." %}" {% if pattern %}value="{{ pattern }}"{% endif %} />
             <input type="submit" class="submitbutton" value="OK" />
           </p>
         </form>
@@ -51,7 +51,7 @@
           </a>
         </h1>
         <blockquote>
-          <p>{% trans "Just another Zinnia weblog." %}</p>
+          <p>{% translate "Just another Zinnia weblog." %}</p>
         </blockquote>
         {% block breadcrumbs %}{% endblock breadcrumbs %}
       </header>
@@ -59,22 +59,22 @@
       <div id="content" class="hfeed" role="main">
         {% block content %}
         <div class="links">
-          <h2>{% trans "Useful links" %}</h2>
+          <h2>{% translate "Useful links" %}</h2>
           <ul>
             <li>
-              <a href="{% url 'zinnia:entry_archive_index' %}" title="{% trans "Weblog index" %}">
-                {% trans "Weblog index" %}
+              <a href="{% url 'zinnia:entry_archive_index' %}" title="{% translate "Weblog index" %}">
+                {% translate "Weblog index" %}
               </a>
             </li>
             <li>
-              <a href="{% url 'zinnia:sitemap' %}" title="{% trans "Sitemap" %}">
-                {% trans "Sitemap" %}
+              <a href="{% url 'zinnia:sitemap' %}" title="{% translate "Sitemap" %}">
+                {% translate "Sitemap" %}
               </a>
             </li>
           </ul>
         </div>
         <div class="search">
-          <h2>{% trans "Search" %}</h2>
+          <h2>{% translate "Search" %}</h2>
           {% include "zinnia/tags/search_form.html" %}
         </div>
         {% endblock content %}
@@ -84,7 +84,7 @@
         {% endblock sidebar %}
       </div>
       <footer id="footer" role="contentinfo">
-        <p>{% blocktrans %}Powered by <a href="http://www.djangoproject.com">Django</a> and <a href="https://github.com/Fantomas42/django-blog-zinnia">Zinnia {{ ZINNIA_VERSION }}</a>.{% endblocktrans %}</p>
+        <p>{% blocktranslate %}Powered by <a href="http://www.djangoproject.com">Django</a> and <a href="https://github.com/Fantomas42/django-blog-zinnia">Zinnia {{ ZINNIA_VERSION }}</a>.{% endblocktranslate %}</p>
       </footer>
     </div>
   </body>

@@ -9,7 +9,7 @@
   </th>
   <td>
     {% with entry=comment.content_object %}
-    {% blocktrans with comment_author=comment.name comment_pk=comment.pk comment_author_slug=comment.user_name|slugify entry_url=entry.get_absolute_url entry_title=entry.title trimmed %}
+    {% blocktranslate with comment_author=comment.name comment_pk=comment.pk comment_author_slug=comment.user_name|slugify entry_url=entry.get_absolute_url entry_title=entry.title trimmed %}
     <strong>{{ comment_author }}</strong> in
     <strong>
       <a href="{{ entry_url }}#comment-{{ comment_pk }}-by-{{ comment_author_slug }}"
@@ -17,21 +17,21 @@
         {{ entry_title }}
       </a>
     </strong>
-    {% endblocktrans %}
+    {% endblocktranslate %}
     {% endwith %}
     {{ comment.comment|truncatewords:20|linebreaks }}
   </td>
   <td>
     <a href="{% url 'change'|comment_admin_urlname comment.pk %}"
-       title="{% trans "Edit the comment" %}" class="changelink">
-      {% trans "Edit" %}
+       title="{% translate "Edit the comment" %}" class="changelink">
+      {% translate "Edit" %}
     </a>
   </td>
 </tr>
 {% empty %}
 <tr>
   <th colspan="3">
-    {% trans "No comments yet." %}
+    {% translate "No comments yet." %}
   </th>
 </tr>
 {% endfor %}
@@ -40,8 +40,8 @@
 <tr>
   <th colspan="3">
     <a href="{% url 'changelist'|comment_admin_urlname %}"
-       title="{% trans "Manage the comments" %}" class="managelink">
-      {% trans "Manage the comments" %}
+       title="{% translate "Manage the comments" %}" class="managelink">
+      {% translate "Manage the comments" %}
     </a>
   </th>
 </tr>

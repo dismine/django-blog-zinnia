@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load zinnia %}
 
-{% block meta-description %}{% trans "Last entries" %}{% endblock meta-description %}
+{% block meta-description %}{% translate "Last entries" %}{% endblock meta-description %}
 
-{% block title %}{% trans "Last entries" %}{% endblock title %}
+{% block title %}{% translate "Last entries" %}{% endblock title %}
 
 {% block body-class %}{{ block.super }} archive index {% now "\y\e\a\r-Y \m\o\n\t\h-m \w\e\ek-W \d\a\y-d" %}{% endblock body-class %}
 
@@ -14,7 +14,7 @@
 
 {% block content-related %}
 {% if date_list %}
-<h2>{% trans "Yearly archives" %}</h2>
+<h2>{% translate "Yearly archives" %}</h2>
 <ul>
   {% for date in date_list %}
   <li>

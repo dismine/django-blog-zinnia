@@ -3,18 +3,18 @@
 
 {% block breadcrumbs %}
 <ul class="breadcrumbs">
-  <li>{% trans "Error 400" %}</li>
+  <li>{% translate "Error 400" %}</li>
 </ul>
 {% endblock breadcrumbs %}
 
-{% block title %}{% trans "Bad request" %}{% endblock title %}
+{% block title %}{% translate "Bad request" %}{% endblock title %}
 
 {% block body-class %}error-400{% endblock body-class %}
 
 {% block content %}
-<h1>{% trans "Bad request" %}</h1>
+<h1>{% translate "Bad request" %}</h1>
 
-<p>{% trans "Sorry, but the request was malformed." %}</p>
+<p>{% translate "Sorry, but the request was malformed." %}</p>
 
 {{ block.super }}
 {% endblock content %}

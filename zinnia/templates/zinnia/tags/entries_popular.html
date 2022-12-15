@@ -4,12 +4,12 @@
   <li>
     <a href="{{ entry.get_absolute_url }}" title="{{ entry.title }}" rel="bookmark">{{ entry.title }}</a>
     <a href="{{ entry.get_absolute_url }}#comments"
-       title="{% blocktrans with object=entry.title %}Comments on {{ object }}{% endblocktrans %}">
-      {% blocktrans count comment_count=entry.comment_count %}{{ comment_count }} comment{% plural %}{{ comment_count }} comments{% endblocktrans %}</a>
+       title="{% blocktranslate with object=entry.title %}Comments on {{ object }}{% endblocktranslate %}">
+      {% blocktranslate count comment_count=entry.comment_count %}{{ comment_count }} comment{% plural %}{{ comment_count }} comments{% endblocktranslate %}</a>
   </li>
   {% empty %}
   <li>
-    {% trans "No entries yet." %}
+    {% translate "No entries yet." %}
   </li>
   {% endfor %}
 </ul>

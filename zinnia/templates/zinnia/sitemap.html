@@ -2,17 +2,17 @@
 {% load i18n %}
 {% load zinnia %}
 
-{% block title %}{% trans "Sitemap" %}{% endblock title %}
+{% block title %}{% translate "Sitemap" %}{% endblock title %}
 
-{% block meta-description %}{% trans "Sitemap of the weblog" %}{% endblock meta-description %}
+{% block meta-description %}{% translate "Sitemap of the weblog" %}{% endblock meta-description %}
 
 {% block body-class %}sitemap{% endblock body-class %}
 
 {% block content %}
-<h1>{% trans "Sitemap" %}</h1>
+<h1>{% translate "Sitemap" %}</h1>
 
 <div class="entriesbycategories">
-  <h2>{% trans "Entries per categories" %}</h2>
+  <h2>{% translate "Entries per categories" %}</h2>
   {% for category in categories %}
   <h3>{{ category }}</h3>
   <ul>
@@ -21,13 +21,13 @@
       <a href="{{ entry.get_absolute_url }}" title="{{ entry.title }}" rel="bookmark">{{ entry.title }}</a>
       {% with comment_count=entry.comment_count %}
       {% if comment_count %}
-      - {{ comment_count }} {% trans "comment" %}{{ comment_count|pluralize }}
+      - {{ comment_count }} {% translate "comment" %}{{ comment_count|pluralize }}
       {% endif %}
       {% endwith %}
     </li>
     {% empty %}
     <li>
-      {% trans "No entries yet." %}
+      {% translate "No entries yet." %}
     </li>
     {% endfor %}
   </ul>
@@ -35,7 +35,7 @@
 </div>
 
 <div class="montharchives">
-  <h2>{% trans "Monthly archives" %}</h2>
+  <h2>{% translate "Monthly archives" %}</h2>
   {% get_archives_entries %}
 </div>
 {% endblock content %}

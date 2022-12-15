@@ -7,7 +7,7 @@
   </div>
   {% endif %}
   <fieldset>
-    <legend>{% trans "Post your comment" %}</legend>
+    <legend>{% translate "Post your comment" %}</legend>
     <input type="hidden" name="next" value="{% url 'zinnia:comment_success' %}"/>
     {% for field in form %}
     {% if field.is_hidden %}{{ field }}{% else %}
@@ -22,12 +22,12 @@
     {% endfor %}
     {% if user.is_authenticated %}
     <p class="auth">
-      {% trans "Comment as" %} <strong>{% firstof user.get_full_name user.get_username %}</strong>. <a href="{% url 'admin:logout' %}">{% trans "Log out" %}</a>.
+      {% translate "Comment as" %} <strong>{% firstof user.get_full_name user.get_username %}</strong>. <a href="{% url 'admin:logout' %}">{% translate "Log out" %}</a>.
     </p>
     {% endif %}
     <p class="submit">
-      <input type="submit" name="submit" class="submit-post" value="{% trans "Post" %}" />
-      <input type="submit" name="preview" class="submit-preview" value="{% trans "Preview" %}" />
+      <input type="submit" name="submit" class="submit-post" value="{% translate "Post" %}" />
+      <input type="submit" name="preview" class="submit-preview" value="{% translate "Preview" %}" />
     </p>
   </fieldset>
 </form>
