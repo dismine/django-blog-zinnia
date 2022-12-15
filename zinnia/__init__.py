@@ -1,10 +1,8 @@
 """Zinnia"""
-__version__ = '0.22.0hk'
+__version__ = '0.22.0+dismine.1'
 __license__ = 'BSD License'
 
 __author__ = 'Fantomas42'
-__email__ = 'tech@housekeep.com'
+__email__ = 'dismine@gmail.com'
 
-__url__ = 'https://github.com/HousekeepLtd/django-blog-zinnia'
-
-default_app_config = 'zinnia.apps.ZinniaConfig'
+__url__ = 'https://github.com/dismine/django-blog-zinnia'

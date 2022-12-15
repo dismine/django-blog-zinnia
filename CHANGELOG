@@ -1,4 +1,10 @@
+0.22.0+dismine.1 - 2022/12/15
+-------------------
+
+* Drop support for Django<3.1.
+
 0.22.0-hk - 2022/12/02
+-------------------
 
 * Fix backwards incompatible shortened URLs to include trailing slash
 * Fix unicode compatibility for author names
@@ -9,17 +15,17 @@
 0.21.3 - 2021/02/25
 -------------------
 
-Release to fix some converter regex with escape character.
+* Release to fix some converter regex with escape character.
 
 0.21.2 - 2021/02/25
 -------------------
 
-Another release to fix package installation.
+* Another release to fix package installation.
 
 0.21.1 - 2021/02/25
 -------------------
 
-New release to fix package publishing on Pypi, no other changes.
+* New release to fix package publishing on Pypi, no other changes.
 
 0.21.0 - 2021/02/25
 -------------------

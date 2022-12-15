@@ -32,7 +32,7 @@ setup(
     license=zinnia.__license__,
     include_package_data=True,
     zip_safe=False,
-    install_requires=['Django>=2.2,<4',
+    install_requires=['Django>=3.2,<4',
                       'beautifulsoup4>=4.3.2',
                       'django-contrib-comments>=1.7.2',
                       'django-mptt>=0.8.6',
