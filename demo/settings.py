@@ -100,3 +100,5 @@ INSTALLED_APPS = (
     'tagging',
     'zinnia'
 )
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
