@@ -4,13 +4,16 @@ import os
 gettext = lambda s: s  # noqa
 
 DEBUG = True
+ALLOWED_HOSTS = [
+    '127.0.0.1'
+]
 
 DATABASES = {'default':
              {'ENGINE': 'django.db.backends.sqlite3',
               'NAME': os.path.join(os.path.dirname(__file__), 'demo.db')}
              }
 
-TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = 'Europe/Kiev'
 
 STATIC_URL = '/static/'
 
