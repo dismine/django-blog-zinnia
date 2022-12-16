@@ -11,7 +11,7 @@ all: kwalitee test docs clean package
 
 package:
 	@echo "$(COLOR)* Creating source package for Zinnia$(NO_COLOR)"
-	@python setup.py sdist
+	@python -m build
 
 test:
 	@echo "$(COLOR)* Launching the tests suite$(NO_COLOR)"
