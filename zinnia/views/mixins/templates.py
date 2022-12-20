@@ -65,7 +65,7 @@ class EntryQuerysetArchiveTemplateResponseMixin(TemplateResponseMixin):
         if they exists.
         """
         try:
-            return getattr(self, 'get_%s' % part)()
+            return getattr(self, f'get_{part}')()
         except AttributeError:
             return None
 
@@ -74,7 +74,7 @@ class EntryQuerysetArchiveTemplateResponseMixin(TemplateResponseMixin):
         Return a list of default base templates used
         to build the full list of templates.
         """
-        return ['entry%s.html' % self.template_name_suffix]
+        return [f'entry{self.template_name_suffix}.html']
 
     def get_template_names(self):
         """

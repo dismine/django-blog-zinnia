@@ -1,4 +1,6 @@
 """Templates module for Zinnia"""
+
+import contextlib
 import os
 
 from django.template.defaultfilters import slugify
@@ -24,19 +26,14 @@ def loop_template_list(loop_positions, instance, instance_type,
     global_loop_position = loop_positions[0]
     instance_string = slugify(str(instance))
 
-    for key in ['%s-%s' % (instance_type, instance_string),
-                instance_string,
-                instance_type,
-                'default']:
-        try:
+    for key in [f'{instance_type}-{instance_string}', instance_string, instance_type, 'default']:
+        with contextlib.suppress(KeyError):
             templates.append(registry[key][global_loop_position])
-        except KeyError:
-            pass
-
-    templates.append(
-        append_position(default_template, global_loop_position, '-'))
-    templates.append(
-        append_position(default_template, local_loop_position, '_'))
-    templates.append(default_template)
-
+    templates.extend(
+        (
+            append_position(default_template, global_loop_position, '-'),
+            append_position(default_template, local_loop_position, '_'),
+            default_template,
+        )
+    )
     return templates

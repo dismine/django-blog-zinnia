@@ -271,11 +271,11 @@ def zinnia_pagination(context, page, begin_pages=1, end_pages=1,
     Return a Digg-like pagination,
     by splitting long list of page into 3 blocks of pages.
     """
-    get_string = ''
-    for key, value in context['request'].GET.items():
-        if key != 'page':
-            get_string += '&%s=%s' % (key, value)
-
+    get_string = ''.join(
+        f'&{key}={value}'
+        for key, value in context['request'].GET.items()
+        if key != 'page'
+    )
     page_range = list(page.paginator.page_range)
     begin = page_range[:begin_pages]
     end = page_range[-end_pages:]
@@ -354,14 +354,12 @@ def get_gravatar(email, size=80, rating='g', default=None,
     """
     gravatar_protocols = {'http': 'http://www',
                           'https': 'https://secure'}
-    url = '%s.gravatar.com/avatar/%s' % (
-        gravatar_protocols[protocol],
-        md5(email.strip().lower().encode('utf-8')).hexdigest())
+    url = f"{gravatar_protocols[protocol]}.gravatar.com/avatar/{md5(email.strip().lower().encode('utf-8')).hexdigest()}"
     options = {'s': size, 'r': rating}
     if default:
         options['d'] = default
 
-    url = '%s?%s' % (url, urlencode(options))
+    url = f'{url}?{urlencode(options)}'
     return url.replace('&', '&amp;')
 
 
@@ -398,7 +396,7 @@ def widont(value, autoescape=None):
     esc = autoescape and conditional_escape or (lambda x: x)
 
     def replace(matchobj):
-        return '&nbsp;%s' % matchobj.group(1)
+        return f'&nbsp;{matchobj.group(1)}'
 
     value = END_PUNCTUATION_WIDONT_REGEXP.sub(replace, esc(smart_str(value)))
     value = WIDONT_REGEXP.sub(replace, value)
@@ -426,9 +424,7 @@ def comment_admin_urlname(action):
     Return the admin URLs for the comment app used.
     """
     comment = get_comment_model()
-    return 'admin:%s_%s_%s' % (
-        comment._meta.app_label, comment._meta.model_name,
-        action)
+    return f'admin:{comment._meta.app_label}_{comment._meta.model_name}_{action}'
 
 
 @register.filter
@@ -437,9 +433,7 @@ def user_admin_urlname(action):
     Return the admin URLs for the user app used.
     """
     user = get_user_model()
-    return 'admin:%s_%s_%s' % (
-        user._meta.app_label, user._meta.model_name,
-        action)
+    return f'admin:{user._meta.app_label}_{user._meta.model_name}_{action}'
 
 
 @register.inclusion_tag('zinnia/tags/dummy.html')
@@ -479,16 +473,12 @@ def zinnia_statistics(template='zinnia/tags/statistics.html'):
         linkbacks_per_entry = float(pingbacks_count + trackbacks_count) / \
             entries_count
 
-        total_words_entry = 0
-        for e in entries.all():
-            total_words_entry += e.word_count
+        total_words_entry = sum(e.word_count for e in entries.all())
         words_per_entry = float(total_words_entry) / entries_count
 
         words_per_comment = 0.0
         if replies_count:
-            total_words_comment = 0
-            for c in replies.all():
-                total_words_comment += len(c.comment.split())
+            total_words_comment = sum(len(c.comment.split()) for c in replies.all())
             words_per_comment = float(total_words_comment) / replies_count
     else:
         words_per_entry = words_per_comment = entries_per_month = \

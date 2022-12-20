@@ -1,11 +1,13 @@
 """Views for Zinnia comments"""
+
+import contextlib
+
+import django_comments as comments
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponsePermanentRedirect
 from django.template.defaultfilters import slugify
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.base import View
-
-import django_comments as comments
 
 
 class CommentSuccess(TemplateResponseMixin, View):
@@ -23,11 +25,9 @@ class CommentSuccess(TemplateResponseMixin, View):
         self.comment = None
 
         if 'c' in request.GET:
-            try:
+            with contextlib.suppress(ObjectDoesNotExist, ValueError):
                 self.comment = comments.get_model().objects.get(
                     pk=request.GET['c'])
-            except (ObjectDoesNotExist, ValueError):
-                pass
         if self.comment and self.comment.is_public:
             return HttpResponsePermanentRedirect(
                 self.comment.get_absolute_url(

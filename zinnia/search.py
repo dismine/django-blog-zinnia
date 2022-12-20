@@ -32,19 +32,18 @@ def create_q(token):
 
     if isinstance(query, str):  # Unicode -> Quoted string
         search = query
-    else:  # List -> No quoted string (possible wildcards)
-        if len(query) == 1:
-            search = query[0]
-        elif len(query) == 3:
-            wildcards = 'BOTH'
+    elif len(query) == 1:
+        search = query[0]
+    elif len(query) == 3:
+        wildcards = 'BOTH'
+        search = query[1]
+    elif len(query) == 2:
+        if query[0] == '*':
+            wildcards = 'START'
             search = query[1]
-        elif len(query) == 2:
-            if query[0] == '*':
-                wildcards = 'START'
-                search = query[1]
-            else:
-                wildcards = 'END'
-                search = query[0]
+        else:
+            wildcards = 'END'
+            search = query[0]
 
     # Ignore short term and stop words
     if (len(search) < 3 and not search.isdigit()) or search in STOP_WORDS:
@@ -53,35 +52,31 @@ def create_q(token):
     if not meta:
         q = Q()
         for field in SEARCH_FIELDS:
-            q |= Q(**{'%s__icontains' % field: search})
+            q |= Q(**{f'{field}__icontains': search})
         return q
 
     if meta == 'category':
         if wildcards == 'BOTH':
             return (Q(categories__title__icontains=search) |
                     Q(categories__slug__icontains=search))
-        elif wildcards == 'START':
-            return (Q(categories__title__iendswith=search) |
-                    Q(categories__slug__iendswith=search))
         elif wildcards == 'END':
             return (Q(categories__title__istartswith=search) |
                     Q(categories__slug__istartswith=search))
+        elif wildcards == 'START':
+            return (Q(categories__title__iendswith=search) |
+                    Q(categories__slug__iendswith=search))
         else:
             return (Q(categories__title__iexact=search) |
                     Q(categories__slug__iexact=search))
     elif meta == 'author':
         if wildcards == 'BOTH':
-            return Q(**{'authors__%s__icontains' % Author.USERNAME_FIELD:
-                        search})
-        elif wildcards == 'START':
-            return Q(**{'authors__%s__iendswith' % Author.USERNAME_FIELD:
-                        search})
+            return Q(**{f'authors__{Author.USERNAME_FIELD}__icontains': search})
         elif wildcards == 'END':
-            return Q(**{'authors__%s__istartswith' % Author.USERNAME_FIELD:
-                        search})
+            return Q(**{f'authors__{Author.USERNAME_FIELD}__istartswith': search})
+        elif wildcards == 'START':
+            return Q(**{f'authors__{Author.USERNAME_FIELD}__iendswith': search})
         else:
-            return Q(**{'authors__%s__iexact' % Author.USERNAME_FIELD:
-                        search})
+            return Q(**{f'authors__{Author.USERNAME_FIELD}__iexact': search})
     elif meta == 'tag':  # TODO: tags ignore wildcards
         return Q(tags__icontains=search)
 
@@ -97,18 +92,17 @@ def union_q(token):
     for t in token:
         if type(t) is ParseResults:  # See tokens recursively
             query &= union_q(t)
-        else:
-            if t in ('or', 'and'):  # Set the new op and go to next token
-                operation = t
-            elif t == '-':  # Next tokens needs to be negated
-                negation = True
-            else:  # Append to query the token
-                if negation:
-                    t = ~t
-                if operation == 'or':
-                    query |= t
-                else:
-                    query &= t
+        elif t in ('or', 'and'):  # Set the new op and go to next token
+            operation = t
+        elif t == '-':  # Next tokens needs to be negated
+            negation = True
+        else:  # Append to query the token
+            if negation:
+                t = ~t
+            if operation == 'or':
+                query |= t
+            else:
+                query &= t
     return query
 
 

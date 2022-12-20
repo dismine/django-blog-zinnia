@@ -91,7 +91,7 @@ class HTMLPreview(object):
         Return the total of words contained
         in the content and in the lead.
         """
-        return len(strip_tags('%s %s' % (self.lead, self.content)).split())
+        return len(strip_tags(f'{self.lead} {self.content}').split())
 
     @cached_property
     def displayed_words(self):

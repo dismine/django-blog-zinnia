@@ -16,5 +16,6 @@ class CallableQuerysetMixin(object):
         """
         if self.queryset is None:
             raise ImproperlyConfigured(
-                "'%s' must define 'queryset'" % self.__class__.__name__)
+                f"'{self.__class__.__name__}' must define 'queryset'"
+            )
         return self.queryset()

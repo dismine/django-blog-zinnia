@@ -59,7 +59,8 @@ class EntryTrackback(TemplateView):
 
         if not entry.trackbacks_are_open:
             return self.render_to_response(
-                {'error': 'Trackback is not enabled for %s' % entry.title})
+                {'error': f'Trackback is not enabled for {entry.title}'}
+            )
 
         title = request.POST.get('title') or url
         excerpt = request.POST.get('excerpt') or title

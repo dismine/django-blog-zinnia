@@ -1,4 +1,6 @@
 """Feeds for Zinnia"""
+
+import contextlib
 import os
 from mimetypes import guess_type
 from urllib.parse import urljoin
@@ -51,7 +53,7 @@ class ZinniaFeed(Feed):
         """
         Title of the feed prefixed with the site name.
         """
-        return '%s - %s' % (self.site.name, self.get_title(obj))
+        return f'{self.site.name} - {self.get_title(obj)}'
 
     def get_title(self, obj):
         raise NotImplementedError
@@ -68,7 +70,7 @@ class ZinniaFeed(Feed):
         """
         Return the URL of the current site.
         """
-        return '%s://%s' % (self.protocol, self.site.domain)
+        return f'{self.protocol}://{self.site.domain}'
 
 
 class EntryFeed(ZinniaFeed):
@@ -145,10 +147,8 @@ class EntryFeed(ZinniaFeed):
         Note: this method is only called if item_enclosure_url
         has returned something.
         """
-        try:
+        with contextlib.suppress(AttributeError, ValueError, os.error):
             return str(item.image.size)
-        except (AttributeError, ValueError, os.error):
-            pass
         return '100000'
 
     def item_enclosure_mime_type(self, item):
@@ -158,9 +158,7 @@ class EntryFeed(ZinniaFeed):
         has returned something.
         """
         mime_type, encoding = guess_type(self.cached_enclosure_url)
-        if mime_type:
-            return mime_type
-        return 'image/jpeg'
+        return mime_type or 'image/jpeg'
 
 
 class LastEntries(EntryFeed):
@@ -332,7 +330,7 @@ class SearchEntries(EntryFeed):
         """
         URL of the search request.
         """
-        return '%s?pattern=%s' % (reverse('zinnia:entry_search'), obj)
+        return f"{reverse('zinnia:entry_search')}?pattern={obj}"
 
     def get_title(self, obj):
         """

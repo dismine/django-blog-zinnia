@@ -83,6 +83,7 @@ class TagAutoComplete(widgets.AdminTextInputWidget):
                 Tag.objects.usage_for_model(Entry)]
 
     def render(self, name, value, attrs=None, renderer=None):
+        # sourcery skip: merge-list-append, merge-list-appends-into-extend, replace-interpolation-with-fstring
         """
         Render the default widget and initialize select2.
         """
@@ -107,8 +108,8 @@ class TagAutoComplete(widgets.AdminTextInputWidget):
         TagAutoComplete's Media.
         """
         def static(path):
-            return staticfiles_storage.url(
-                'zinnia/admin/select2/%s' % path)
+            return staticfiles_storage.url(f'zinnia/admin/select2/{path}')
+
         return Media(
             css={'all': (static('css/select2.css'),)},
             js=(static('js/select2.js'),)

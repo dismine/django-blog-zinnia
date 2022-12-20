@@ -7,8 +7,7 @@ def get_context_first_matching_object(context, context_lookups):
     from a list of keys, with the matching key.
     """
     for key in context_lookups:
-        context_object = context.get(key)
-        if context_object:
+        if context_object := context.get(key):
             return key, context_object
     return None, None
 

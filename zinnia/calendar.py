@@ -49,8 +49,7 @@ class Calendar(HTMLCalendar):
         """
         Return a weekday name translated as a table header.
         """
-        return '<th class="%s">%s</th>' % (self.cssclasses[day],
-                                           WEEKDAYS_ABBR[day].title())
+        return f'<th class="{self.cssclasses[day]}">{WEEKDAYS_ABBR[day].title()}</th>'
 
     def formatweekheader(self):
         """
@@ -108,8 +107,9 @@ class Calendar(HTMLCalendar):
                                 ).datetimes('publication_date', 'day')]
         v = []
         a = v.append
-        a('<table class="%s">' % (
-            self.day_entries and 'entries-calendar' or 'no-entries-calendar'))
+        a(
+            f"""<table class="{self.day_entries and 'entries-calendar' or 'no-entries-calendar'}">"""
+        )
         a('\n')
         a(self.formatmonthname(theyear, themonth, withyear=withyear))
         a('\n')

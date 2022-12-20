@@ -43,11 +43,9 @@ class EntryCommentModerator(CommentModerator):
         if self.auto_moderate_comments:
             return True
 
-        if check_is_spam(comment, entry, request,
-                         self.spam_checker_backends):
-            return True
-
-        return False
+        return bool(
+            check_is_spam(comment, entry, request, self.spam_checker_backends)
+        )
 
     def email(self, comment, entry, request):
         """
@@ -100,9 +98,8 @@ class EntryCommentModerator(CommentModerator):
             return
 
         exclude_list = self.mail_comment_notification_recipients + ['']
-        recipient_list = (
-            set([author.email for author in entry.authors.all()])
-            - set(exclude_list)
+        recipient_list = {author.email for author in entry.authors.all()} - set(
+            exclude_list
         )
         if not recipient_list:
             return
@@ -116,7 +113,7 @@ class EntryCommentModerator(CommentModerator):
             'protocol': PROTOCOL
         }
         subject = _('[%(site)s] New comment posted on "%(title)s"') % \
-            {'site': site.name, 'title': entry.title}
+                {'site': site.name, 'title': entry.title}
         message = template.render(context)
 
         send_mail(
@@ -139,12 +136,11 @@ class EntryCommentModerator(CommentModerator):
             + [author.email for author in entry.authors.all()]
             + [comment.email]
         )
-        recipient_list = (
-            set([other_comment.email
-                 for other_comment in entry.comments
-                 if other_comment.email])
-            - set(exclude_list)
-        )
+        recipient_list = {
+            other_comment.email
+            for other_comment in entry.comments
+            if other_comment.email
+        } - set(exclude_list)
         if not recipient_list:
             return
 
@@ -157,7 +153,7 @@ class EntryCommentModerator(CommentModerator):
             'protocol': PROTOCOL
         }
         subject = _('[%(site)s] New comment posted on "%(title)s"') % \
-            {'site': site.name, 'title': entry.title}
+                {'site': site.name, 'title': entry.title}
         message = template.render(context)
 
         mail = EmailMessage(

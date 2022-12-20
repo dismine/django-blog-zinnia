@@ -33,17 +33,15 @@ def authenticate(username, password, permission=None):
     Authenticate staff_user with permission.
     """
     try:
-        author = Author.objects.get(
-            **{'%s__exact' % Author.USERNAME_FIELD: username})
-    except Author.DoesNotExist:
-        raise Fault(LOGIN_ERROR, _('Username is incorrect.'))
+        author = Author.objects.get(**{f'{Author.USERNAME_FIELD}__exact': username})
+    except Author.DoesNotExist as e:
+        raise Fault(LOGIN_ERROR, _('Username is incorrect.')) from e
     if not author.check_password(password):
         raise Fault(LOGIN_ERROR, _('Password is invalid.'))
     if not author.is_staff or not author.is_active:
         raise Fault(PERMISSION_DENIED, _('User account unavailable.'))
-    if permission:
-        if not author.has_perm(permission):
-            raise Fault(PERMISSION_DENIED, _('User cannot %s.') % permission)
+    if permission and not author.has_perm(permission):
+        raise Fault(PERMISSION_DENIED, _('User cannot %s.') % permission)
     return author
 
 
@@ -51,11 +49,11 @@ def blog_structure(site):
     """
     A blog structure.
     """
-    return {'blogid': settings.SITE_ID,
-            'blogName': site.name,
-            'url': '%s://%s%s' % (
-                PROTOCOL, site.domain,
-                reverse('zinnia:entry_archive_index'))}
+    return {
+        'blogid': settings.SITE_ID,
+        'blogName': site.name,
+        'url': f"{PROTOCOL}://{site.domain}{reverse('zinnia:entry_archive_index')}",
+    }
 
 
 def user_structure(user, site):
@@ -68,14 +66,14 @@ def user_structure(user, site):
         last_name = full_name[1]
     except IndexError:
         last_name = ''
-    return {'userid': user.pk,
-            'email': user.email,
-            'nickname': user.get_username(),
-            'lastname': last_name,
-            'firstname': first_name,
-            'url': '%s://%s%s' % (
-                PROTOCOL, site.domain,
-                user.get_absolute_url())}
+    return {
+        'userid': user.pk,
+        'email': user.email,
+        'nickname': user.get_username(),
+        'lastname': last_name,
+        'firstname': first_name,
+        'url': f'{PROTOCOL}://{site.domain}{user.get_absolute_url()}',
+    }
 
 
 def author_structure(user):
@@ -92,18 +90,20 @@ def category_structure(category, site):
     """
     A category structure.
     """
-    return {'description': category.title,
-            'htmlUrl': '%s://%s%s' % (
-                PROTOCOL, site.domain,
-                category.get_absolute_url()),
-            'rssUrl': '%s://%s%s' % (
-                PROTOCOL, site.domain,
-                reverse('zinnia:category_feed', args=[category.tree_path])),
-            # Useful Wordpress Extensions
-            'categoryId': category.pk,
-            'parentId': category.parent and category.parent.pk or 0,
-            'categoryDescription': category.description,
-            'categoryName': category.title}
+    return {
+        'description': category.title,
+        'htmlUrl': f'{PROTOCOL}://{site.domain}{category.get_absolute_url()}',
+        'rssUrl': '%s://%s%s'
+        % (
+            PROTOCOL,
+            site.domain,
+            reverse('zinnia:category_feed', args=[category.tree_path]),
+        ),
+        'categoryId': category.pk,
+        'parentId': category.parent and category.parent.pk or 0,
+        'categoryDescription': category.description,
+        'categoryName': category.title,
+    }
 
 
 def tag_structure(tag, site):
@@ -128,30 +128,28 @@ def post_structure(entry, site):
     A post structure with extensions.
     """
     author = entry.authors.all()[0]
-    return {'title': entry.title,
-            'description': str(entry.html_content),
-            'link': '%s://%s%s' % (PROTOCOL, site.domain,
-                                   entry.get_absolute_url()),
-            # Basic Extensions
-            'permaLink': '%s://%s%s' % (PROTOCOL, site.domain,
-                                        entry.get_absolute_url()),
-            'categories': [cat.title for cat in entry.categories.all()],
-            'dateCreated': DateTime(entry.creation_date.isoformat()),
-            'postid': entry.pk,
-            'userid': author.get_username(),
-            # Useful Movable Type Extensions
-            'mt_excerpt': entry.excerpt,
-            'mt_allow_comments': int(entry.comment_enabled),
-            'mt_allow_pings': (int(entry.pingback_enabled) or
-                               int(entry.trackback_enabled)),
-            'mt_keywords': entry.tags,
-            # Useful Wordpress Extensions
-            'wp_author': author.get_username(),
-            'wp_author_id': author.pk,
-            'wp_author_display_name': author.__str__(),
-            'wp_password': entry.password,
-            'wp_slug': entry.slug,
-            'sticky': entry.featured}
+    return {
+        'title': entry.title,
+        'description': str(entry.html_content),
+        'link': f'{PROTOCOL}://{site.domain}{entry.get_absolute_url()}',
+        'permaLink': f'{PROTOCOL}://{site.domain}{entry.get_absolute_url()}',
+        'categories': [cat.title for cat in entry.categories.all()],
+        'dateCreated': DateTime(entry.creation_date.isoformat()),
+        'postid': entry.pk,
+        'userid': author.get_username(),
+        'mt_excerpt': entry.excerpt,
+        'mt_allow_comments': int(entry.comment_enabled),
+        'mt_allow_pings': (
+            int(entry.pingback_enabled) or int(entry.trackback_enabled)
+        ),
+        'mt_keywords': entry.tags,
+        'wp_author': author.get_username(),
+        'wp_author_id': author.pk,
+        'wp_author_display_name': author.__str__(),
+        'wp_password': entry.password,
+        'wp_slug': entry.slug,
+        'sticky': entry.featured,
+    }
 
 
 @xmlrpc_func(returns='struct[]', args=['string', 'string', 'string'])
@@ -304,9 +302,12 @@ def new_post(blog_id, username, password, post, publish):
     entry = Entry.objects.create(**entry_dict)
 
     author = user
-    if 'wp_author_id' in post and user.has_perm('zinnia.can_change_author'):
-        if int(post['wp_author_id']) != user.pk:
-            author = Author.objects.get(pk=post['wp_author_id'])
+    if (
+        'wp_author_id' in post
+        and author.has_perm('zinnia.can_change_author')
+        and int(post['wp_author_id']) != author.pk
+    ):
+        author = Author.objects.get(pk=post['wp_author_id'])
     entry.authors.add(author)
 
     entry.sites.add(Site.objects.get_current())
@@ -355,11 +356,14 @@ def edit_post(post_id, username, password, post, publish):
     entry.password = post.get('wp_password', '')
     entry.save()
 
-    if 'wp_author_id' in post and user.has_perm('zinnia.can_change_author'):
-        if int(post['wp_author_id']) != user.pk:
-            author = Author.objects.get(pk=post['wp_author_id'])
-            entry.authors.clear()
-            entry.authors.add(author)
+    if (
+        'wp_author_id' in post
+        and user.has_perm('zinnia.can_change_author')
+        and int(post['wp_author_id']) != user.pk
+    ):
+        author = Author.objects.get(pk=post['wp_author_id'])
+        entry.authors.clear()
+        entry.authors.add(author)
 
     if 'categories' in post:
         entry.categories.clear()

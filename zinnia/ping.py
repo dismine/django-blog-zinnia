@@ -1,4 +1,6 @@
 """Pings utilities for Zinnia"""
+
+import contextlib
 import socket
 from logging import getLogger
 from threading import Thread
@@ -23,11 +25,9 @@ class URLRessources(object):
 
     def __init__(self):
         self.current_site = Site.objects.get_current()
-        self.site_url = '%s://%s' % (PROTOCOL, self.current_site.domain)
-        self.blog_url = '%s%s' % (self.site_url,
-                                  reverse('zinnia:entry_archive_index'))
-        self.blog_feed = '%s%s' % (self.site_url,
-                                   reverse('zinnia:entry_feed'))
+        self.site_url = f'{PROTOCOL}://{self.current_site.domain}'
+        self.blog_url = f"{self.site_url}{reverse('zinnia:entry_archive_index')}"
+        self.blog_feed = f"{self.site_url}{reverse('zinnia:entry_feed')}"
 
 
 class DirectoryPinger(Thread):
@@ -62,8 +62,7 @@ class DirectoryPinger(Thread):
         """
         Ping an entry to a directory.
         """
-        entry_url = '%s%s' % (self.ressources.site_url,
-                              entry.get_absolute_url())
+        entry_url = f'{self.ressources.site_url}{entry.get_absolute_url()}'
         categories = '|'.join([c.title for c in entry.categories.all()])
 
         try:
@@ -78,9 +77,10 @@ class DirectoryPinger(Thread):
                     self.ressources.blog_url, entry_url,
                     categories)
             except Exception:
-                reply = {'message': '%s is an invalid directory.' %
-                         self.server_name,
-                         'flerror': True}
+                reply = {
+                    'message': f'{self.server_name} is an invalid directory.',
+                    'flerror': True,
+                }
         return reply
 
 
@@ -94,8 +94,7 @@ class ExternalUrlsPinger(Thread):
         self.entry = entry
         self.timeout = timeout
         self.ressources = URLRessources()
-        self.entry_url = '%s%s' % (self.ressources.site_url,
-                                   self.entry.get_absolute_url())
+        self.entry_url = f'{self.ressources.site_url}{self.entry.get_absolute_url()}'
 
         super(ExternalUrlsPinger, self).__init__()
         self.start()
@@ -122,19 +121,22 @@ class ExternalUrlsPinger(Thread):
         Check if the URL is an external URL.
         """
         url_splitted = urlsplit(url)
-        if not url_splitted.netloc:
-            return False
-        return url_splitted.netloc != urlsplit(site_url).netloc
+        return (
+            url_splitted.netloc != urlsplit(site_url).netloc
+            if url_splitted.netloc
+            else False
+        )
 
     def find_external_urls(self, entry):
         """
         Find external URLs in an entry.
         """
         soup = BeautifulSoup(entry.html_content, 'html.parser')
-        external_urls = [a['href'] for a in soup.find_all('a')
-                         if self.is_external_url(
-                             a['href'], self.ressources.site_url)]
-        return external_urls
+        return [
+            a['href']
+            for a in soup.find_all('a')
+            if self.is_external_url(a['href'], self.ressources.site_url)
+        ]
 
     def find_pingback_href(self, content):
         """
@@ -155,7 +157,7 @@ class ExternalUrlsPinger(Thread):
         pingback_urls = {}
 
         for url in urls:
-            try:
+            with contextlib.suppress(IOError):
                 page = urlopen(url)
                 headers = page.info()
 
@@ -172,12 +174,8 @@ class ExternalUrlsPinger(Thread):
                     server_url_splitted = urlsplit(server_url)
                     if not server_url_splitted.netloc:
                         url_splitted = urlsplit(url)
-                        server_url = '%s://%s%s' % (url_splitted.scheme,
-                                                    url_splitted.netloc,
-                                                    server_url)
+                        server_url = f'{url_splitted.scheme}://{url_splitted.netloc}{server_url}'
                     pingback_urls[url] = server_url
-            except IOError:
-                pass
         return pingback_urls
 
     def pingback_url(self, server_name, target_url):
@@ -188,5 +186,5 @@ class ExternalUrlsPinger(Thread):
             server = ServerProxy(server_name)
             reply = server.pingback.ping(self.entry_url, target_url)
         except (Error, socket.error):
-            reply = '%s cannot be pinged.' % target_url
+            reply = f'{target_url} cannot be pinged.'
         return reply

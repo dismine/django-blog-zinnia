@@ -34,9 +34,10 @@ class MPTTModelMultipleChoiceField(forms.ModelMultipleChoiceField):
         when generating option labels.
         """
         label = smart_str(obj)
-        prefix = self.level_indicator * getattr(obj, obj._mptt_meta.level_attr)
-        if prefix:
-            return '%s %s' % (prefix, label)
+        if prefix := self.level_indicator * getattr(
+            obj, obj._mptt_meta.level_attr
+        ):
+            return f'{prefix} {label}'
         return label
 
     def _get_choices(self):

@@ -16,8 +16,10 @@ def get_url_shortener():
         backend_module = import_module(URL_SHORTENER_BACKEND)
         backend = getattr(backend_module, 'backend')
     except (ImportError, AttributeError):
-        warnings.warn('%s backend cannot be imported' % URL_SHORTENER_BACKEND,
-                      RuntimeWarning)
+        warnings.warn(
+            f'{URL_SHORTENER_BACKEND} backend cannot be imported',
+            RuntimeWarning,
+        )
         backend = default_backend
     except ImproperlyConfigured as e:
         warnings.warn(str(e), RuntimeWarning)

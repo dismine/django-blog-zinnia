@@ -73,10 +73,10 @@ class EntryRelatedSitemap(ZinniaSitemap):
         Cache infos like the number of entries published and
         the last modification date for standardized access later.
         """
-        self.cache = {}
-        for item in queryset:
-            self.cache[item.pk] = (item.count_entries_published,
-                                   item.last_update)
+        self.cache = {
+            item.pk: (item.count_entries_published, item.last_update)
+            for item in queryset
+        }
 
     def set_max_entries(self):
         """
@@ -84,7 +84,7 @@ class EntryRelatedSitemap(ZinniaSitemap):
         of each items later.
         """
         if self.cache:
-            self.max_entries = float(max([i[0] for i in self.cache.values()]))
+            self.max_entries = float(max(i[0] for i in self.cache.values()))
 
     def lastmod(self, item):
         """

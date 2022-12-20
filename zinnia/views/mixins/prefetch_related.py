@@ -16,12 +16,12 @@ class PrefetchRelatedMixin(object):
         """
         if self.relation_names is None:
             raise ImproperlyConfigured(
-                "'%s' must define 'relation_names'" %
-                self.__class__.__name__)
+                f"'{self.__class__.__name__}' must define 'relation_names'"
+            )
         if not isinstance(self.relation_names, (tuple, list)):
             raise ImproperlyConfigured(
-                "%s's relation_names property must be a tuple or list." %
-                self.__class__.__name__)
+                f"{self.__class__.__name__}'s relation_names property must be a tuple or list."
+            )
         return super(PrefetchRelatedMixin, self
                      ).get_queryset().prefetch_related(*self.relation_names)
 

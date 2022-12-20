@@ -15,8 +15,7 @@ def get_spam_checker(backend_path):
         backend_module = import_module(backend_path)
         backend = getattr(backend_module, 'backend')
     except (ImportError, AttributeError):
-        warnings.warn('%s backend cannot be imported' % backend_path,
-                      RuntimeWarning)
+        warnings.warn(f'{backend_path} backend cannot be imported', RuntimeWarning)
         backend = None
     except ImproperlyConfigured as e:
         warnings.warn(str(e), RuntimeWarning)
@@ -36,8 +35,7 @@ def check_is_spam(content, content_object, request,
     for backend_path in backends:
         spam_checker = get_spam_checker(backend_path)
         if spam_checker is not None:
-            is_spam = spam_checker(content, content_object, request)
-            if is_spam:
+            if is_spam := spam_checker(content, content_object, request):
                 return True
 
     return False

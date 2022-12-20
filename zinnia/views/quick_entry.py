@@ -82,8 +82,7 @@ class QuickEntry(View):
                 'slug': slugify(request.POST.get('title', '')),
                 'authors': request.user.pk,
                 'sites': Site.objects.get_current().pk}
-        return redirect('%s?%s' % (reverse('admin:zinnia_entry_add'),
-                                   urlencode(data)))
+        return redirect(f"{reverse('admin:zinnia_entry_add')}?{urlencode(data)}")
 
     def htmlize(self, content):
         """
@@ -91,6 +90,4 @@ class QuickEntry(View):
         is set to HTML to optimize the rendering and avoid
         ugly effect in WYMEditor.
         """
-        if MARKUP_LANGUAGE == 'html':
-            return linebreaks(content)
-        return content
+        return linebreaks(content) if MARKUP_LANGUAGE == 'html' else content

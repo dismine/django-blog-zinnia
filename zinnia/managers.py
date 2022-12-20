@@ -78,7 +78,7 @@ class EntryPublishedManager(models.Manager):
         for pattern in pattern.split():
             query_part = models.Q()
             for field in SEARCH_FIELDS:
-                query_part |= models.Q(**{'%s__icontains' % field: pattern})
+                query_part |= models.Q(**{f'{field}__icontains': pattern})
             if lookup is None:
                 lookup = query_part
             else:
