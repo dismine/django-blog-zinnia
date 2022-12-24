@@ -417,7 +417,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
         self.assertEqual(len(self.request._messages.messages), 2)
         self.assertEqual(self.request._messages.messages,
                          [(20, 'http://ping.com/ping : KO', ''),
-                          (20, 'http://ping.com/ping directory succesfully '
+                          (20, 'http://ping.com/ping directory successfully '
                            'pinged 1 entries.', '')])
         entry_admin.DirectoryPinger = original_pinger
         settings.PING_DIRECTORIES = original_ping_directories

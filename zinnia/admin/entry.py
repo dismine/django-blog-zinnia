@@ -348,7 +348,7 @@ class EntryAdmin(admin.ModelAdmin):
                 if success:
                     self.message_user(
                         request,
-                        _('%(directory)s directory succesfully '
+                        _('%(directory)s directory successfully '
                           'pinged %(success)d entries.') %
                         {'directory': directory, 'success': success})
     ping_directories.short_description = _(
