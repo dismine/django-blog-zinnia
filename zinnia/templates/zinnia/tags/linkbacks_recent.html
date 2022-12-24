@@ -3,14 +3,12 @@
   {% for linkback in linkbacks %}
   <li>
     {% with entry=linkback.content_object %}
-    {% blocktranslate with linkback_url=linkback.url linkback_name=linkback.name linkback_pk=linkback.pk entry_url=entry.get_absolute_url entry_title=entry.title trimmed %}
-    <a href="{{ linkback_url }}">{{ linkback_name }}</a>
+    <a href="{{ linkback.url }}">{{ linkback.name }}</a>
     in
-    <a href="{{ entry_url }}#c{{ linkback_pk }}"
-       title="Linkback on {{ entry_title }}">
-      {{ entry_title }}
+    <a href="{{ entry.get_absolute_url }}#c{{ linkback.pk }}"
+       title="{% translate "Linkback on" context "entry title"  %} {{ entry.title }}">
+      {{ entry.title }}
     </a>
-    {% endblocktranslate %}
     {% endwith %}
   </li>
   {% empty %}

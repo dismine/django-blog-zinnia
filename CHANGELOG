@@ -3,6 +3,7 @@
 
 * Code refactoring.
 * Update requirements for django-tagging and django-xmlrpc.
+* Improve templates translation.
 
 0.22.0+dismine.1 - 2022/12/15
 -------------------

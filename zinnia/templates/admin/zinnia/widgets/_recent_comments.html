@@ -9,15 +9,13 @@
   </th>
   <td>
     {% with entry=comment.content_object %}
-    {% blocktranslate with comment_author=comment.name comment_pk=comment.pk comment_author_slug=comment.user_name|slugify entry_url=entry.get_absolute_url entry_title=entry.title trimmed %}
-    <strong>{{ comment_author }}</strong> in
+    <strong>{{ comment.name }}</strong> {% translate "in" context "url" %}
     <strong>
-      <a href="{{ entry_url }}#comment-{{ comment_pk }}-by-{{ comment_author_slug }}"
-         title="Comment on {{ entry_title }}">
-        {{ entry_title }}
+      <a href="{{ entry.get_absolute_url }}#comment-{{ comment.pk }}-by-{{ comment.user_name|slugify }}"
+         title="{% translate "Comment on" context "entry title" %} {{ entry.title }}">
+        {{ entry.title }}
       </a>
     </strong>
-    {% endblocktranslate %}
     {% endwith %}
     {{ comment.comment|truncatewords:20|linebreaks }}
   </td>

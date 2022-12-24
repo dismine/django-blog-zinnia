@@ -3,13 +3,11 @@
 <tr>
   <th>
     {% url 'admin:zinnia_entry_change' entry.pk as entry_edit_url %}
-    {% blocktranslate with entry_title=entry.title publication_date=entry.publication_date|date:"DATE_FORMAT" trimmed %}
-    <a href="{{ entry_edit_url }}" title="Edit the entry">
-      {{ entry_title }}
+    <a href="{{ entry_edit_url }}" title="{% translate "Edit the entry" %}">
+      {{ entry.title }}
     </a>
-    on
-    <time>{{ publication_date }}</time>
-    {% endblocktranslate %}
+    {% translate "on" context "time" %}
+    <time>{{ entry.publication_date|date:"DATE_FORMAT" }}</time>
     {{ entry.html_content|truncatewords_html:20|safe }}
   </th>
   <td>
