@@ -1,10 +1,11 @@
-0.22.0+dismine.2 - unreleased
+0.22.0+dismine.2 - 2022/12/27
 -------------------
 
 * Code refactoring.
 * Update requirements for django-tagging and django-xmlrpc.
 * Improve templates translation.
 * Update Ukrainian localization.
+* Fixed compatibility with Django >= 3.2.
 
 0.22.0+dismine.1 - 2022/12/15
 -------------------
