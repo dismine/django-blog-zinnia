@@ -7,9 +7,17 @@ NO_COLOR	= \033[0m
 COLOR	 	= \033[32;01m
 SUCCESS_COLOR	= \033[35;01m
 
-all: kwalitee test docs clean package
+all: kwalitee test docs clean package ensure_virtual_env requirements sync-requirements
 
-package:
+# most of the commands can only be used inside of the virtual environment
+ensure_virtual_env:
+	@if [ -z $$VIRTUAL_ENV ]; then \
+		echo "You don't have a virtualenv enabled."; \
+		echo "Please enable the virtualenv first!"; \
+		exit 1; \
+	fi
+
+package: ensure_virtual_env
 	@echo "$(COLOR)* Creating source package for Zinnia$(NO_COLOR)"
 	@python -m build
 
@@ -27,7 +35,7 @@ sphinx:
 
 docs: coverage sphinx
 
-kwalitee:
+kwalitee: ensure_virtual_env
 	@echo "$(COLOR)* Running flake8$(NO_COLOR)"
 	@./bin/flake8 --show-source --statistics zinnia
 	@echo "$(SUCCESS_COLOR)* No kwalitee errors, Congratulations ! :)$(NO_COLOR)"
@@ -60,3 +68,11 @@ mrproper: clean
 	@rm -rf docs/build/doctrees
 	@rm -rf docs/build/html
 	@rm -rf docs/coverage
+
+# compile requirements.txt. Requires GITLAB_PIP_USERNAME and GITLAB_PIP_TOKEN environment variables
+requirements: ensure_virtual_env
+	pip-compile -v --index-url 'https://${GITLAB_PIP_USERNAME}:${GITLAB_PIP_TOKEN}@gitlab.com/api/v4/projects/14215913/packages/pypi/simple' --generate-hashes requirements.in -o requirements.txt --allow-unsafe --no-emit-index-url --resolver=backtracking --strip-extras
+
+# install requirements for development. Requires GITLAB_PIP_USERNAME and GITLAB_PIP_TOKEN environment variables
+sync-requirements: ensure_virtual_env
+	pip-sync requirements.txt --index-url 'https://${GITLAB_PIP_USERNAME}:${GITLAB_PIP_TOKEN}@gitlab.com/api/v4/projects/14215913/packages/pypi/simple'

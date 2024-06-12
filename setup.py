@@ -39,8 +39,9 @@ setup(
                       'django-tagging==0.6.0+dismine.1',
                       'django-xmlrpc==0.1.8+dismine.1',
                       'mots-vides>=2015.5.11',
-                      'pillow>=2.0.0',
+                      'pillow>=10.3.0',
                       'pyparsing>=2.0.3',
                       'pytz>=2014.10',
-                      'regex>=2016.3.2']
+                      'regex>=2016.3.2',
+                      'sqlparse>=0.5.0']
 )
