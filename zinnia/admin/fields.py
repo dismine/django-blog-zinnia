@@ -2,6 +2,13 @@
 from django import forms
 from django.utils.encoding import smart_str
 
+# Try to import normalize_choices from Django 5.0, otherwise define a fallback
+try:
+    from django.utils.choices import normalize_choices
+    NORMALIZE_CHOICES_AVAILABLE = True
+except ImportError:
+    NORMALIZE_CHOICES_AVAILABLE = False
+
 
 class MPTTModelChoiceIterator(forms.models.ModelChoiceIterator):
     """
@@ -40,10 +47,18 @@ class MPTTModelMultipleChoiceField(forms.ModelMultipleChoiceField):
             return f'{prefix} {label}'
         return label
 
-    def _get_choices(self):
+    @property
+    def choices(self):
         """
         Override the _get_choices method to use MPTTModelChoiceIterator.
         """
         return MPTTModelChoiceIterator(self)
 
-    choices = property(_get_choices, forms.ChoiceField._set_choices)
+    @choices.setter
+    def choices(self, value):
+        if NORMALIZE_CHOICES_AVAILABLE:
+            # Setting choices on the field also sets the choices on the widget.
+            # Note that the property setter for the widget will re-normalize.
+            self._choices = self.widget.choices = normalize_choices(value)
+        else:
+            forms.ChoiceField._set_choices(self, value)
