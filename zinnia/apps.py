@@ -10,6 +10,7 @@ class ZinniaConfig(AppConfig):
     name = 'zinnia'
     label = 'zinnia'
     verbose_name = _('Weblog')
+    default_auto_field = 'django.db.models.AutoField'
 
     def ready(self):
         from django_comments.moderation import moderator
