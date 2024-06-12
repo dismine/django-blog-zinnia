@@ -2,6 +2,7 @@
 ------------------------------
 * Compatibility fix for Django 5.0.
 * Added missing migration that was not added in the upstream.
+* Updated requirements.
 
 0.22.0+dismine.3 - 2022/12/30
 -------------------
