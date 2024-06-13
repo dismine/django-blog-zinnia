@@ -21,7 +21,7 @@
 
 {% endspaceless %}{% endblock meta-description %}
 
-{% block meta-description-page %}{% if page_obj %}{% ifnotequal page_obj.number 1 %} {% blocktranslate with page_number=page_obj.number %}page {{ page_number }}{% endblocktranslate %}{% endifnotequal %}{% endif %}{% endblock meta-description-page %}
+{% block meta-description-page %}{% if page_obj %}{% if page_obj.number != 1 %} {% blocktranslate with page_number=page_obj.number %}page {{ page_number }}{% endblocktranslate %}{% endif %}{% endif %}{% endblock meta-description-page %}
 
 {% block title %}{% spaceless %}
 {% if category %}
@@ -38,7 +38,7 @@
 
 {% endspaceless %}{% endblock title %}
 
-{% block title-page %}{% if page_obj %}{% ifnotequal page_obj.number 1 %} - {% blocktranslate with object=page_obj.number %}Page {{ object }}{% endblocktranslate %}{% endifnotequal %}{% endif %}{% endblock title-page %}
+{% block title-page %}{% if page_obj %}{% if page_obj.number != 1 %} - {% blocktranslate with object=page_obj.number %}Page {{ object }}{% endblocktranslate %}{% endif %}{% endif %}{% endblock title-page %}
 
 {% block link %}
   {{ block.super }}

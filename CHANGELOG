@@ -1,4 +1,8 @@
-0.23.0+dismine.1, 12st June 2024:
+0.23.0+dismine.2 - 2024/06/13:
+------------------------------
+* Remove deprecated template tags.
+
+0.23.0+dismine.1 - 2024/06/12:
 ------------------------------
 * Compatibility fix for Django 5.0.
 * Added missing migration that was not added in the upstream.
