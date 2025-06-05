@@ -7,7 +7,7 @@ NO_COLOR	= \033[0m
 COLOR	 	= \033[32;01m
 SUCCESS_COLOR	= \033[35;01m
 
-all: kwalitee test docs clean package ensure_virtual_env requirements sync-requirements
+all: kwalitee test docs clean package ensure_virtual_env
 
 # most of the commands can only be used inside of the virtual environment
 ensure_virtual_env:
@@ -68,11 +68,3 @@ mrproper: clean
 	@rm -rf docs/build/doctrees
 	@rm -rf docs/build/html
 	@rm -rf docs/coverage
-
-# compile requirements.txt. Requires GITLAB_PIP_USERNAME and GITLAB_PIP_TOKEN environment variables
-requirements: ensure_virtual_env
-	pip-compile -v --index-url 'https://${GITLAB_PIP_USERNAME}:${GITLAB_PIP_TOKEN}@gitlab.com/api/v4/projects/14215913/packages/pypi/simple' --generate-hashes requirements.in -o requirements.txt --allow-unsafe --no-emit-index-url --resolver=backtracking --strip-extras
-
-# install requirements for development. Requires GITLAB_PIP_USERNAME and GITLAB_PIP_TOKEN environment variables
-sync-requirements: ensure_virtual_env
-	pip-sync requirements.txt --index-url 'https://${GITLAB_PIP_USERNAME}:${GITLAB_PIP_TOKEN}@gitlab.com/api/v4/projects/14215913/packages/pypi/simple'

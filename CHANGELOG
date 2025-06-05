@@ -1,3 +1,9 @@
+0.24.0+dismine.1 - 2025/06/05:
+------------------------------
+* Minimal Django version 5.2.
+* Drop support Python < 3.10.
+* Migration to Poetry.
+
 0.23.0+dismine.2 - 2024/06/13:
 ------------------------------
 * Remove deprecated template tags.

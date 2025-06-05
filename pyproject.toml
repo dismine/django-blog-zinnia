@@ -1,0 +1,103 @@
+[project]
+name = "django-blog-zinnia"
+version = "0.23.0+dismine.2"
+description = "A clear and powerful weblog application powered with Django"
+authors = [
+    {name = "Fantomas42",email = "fantomas42@gmail.com"}
+]
+maintainers = [
+    {name = "Roman Telezhynskyi",email = "dismine@gmail.com"}
+]
+license = {file = "LICENSE"}
+readme = "README.rst"
+keywords = ["django", "blog", "weblog", "zinnia", "post", "news"]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "django (>=5.2.2,<6.0.0)",
+    "django-tagging (>=0.7.0+dismine.1,<0.8.0)",
+    "django-xmlrpc (>=0.2.0+dismine.1,<0.3.0)",
+    "django-contrib-comments (>=2.2.0,<3.0.0)",
+    "django-js-asset (>=3.1.2,<4.0.0)",
+    "django-mptt (>=0.17.0,<0.18.0)",
+    "pillow (>=10.3,<11.0)",
+    "sqlparse (>=0.5,<0.6)",
+    "textile (>=4.0.3,<5.0.0)",
+    "markdown (>=3.8,<4.0)",
+    "beautifulsoup4 (>=4.13.4,<5.0.0)",
+    "chardet (>=5.2.0,<6.0.0)",
+    "mots-vides (>=2015.5.11,<2016.0.0)",
+    "pyparsing (>=3.2.3,<4.0.0)",
+    "pytz (>=2025.2,<2026.0)",
+    "regex (>=2024.11.6,<2025.0.0)",
+    "olefile (>=0.47,<0.48)"
+]
+classifiers=[
+    'Framework :: Django',
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Web Environment',
+    'Programming Language :: Python :: 3',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'License :: OSI Approved :: BSD License',
+    'Topic :: Software Development :: Libraries :: Python Modules'
+]
+
+[project.urls]
+Repository = "https://github.com/dismine/django-blog-zinnia"
+Changelog = "https://github.com/dismine/django-blog-zinnia/blob/develop/CHANGELOG"
+
+[tool.poetry]
+exclude = [
+    "**/tests",
+    { path = "demo/demo.db*", format = "sdist" },
+    { path = "docs/build", format = "sdist" },
+    { path = "docs/coverage", format = "sdist" },
+]
+
+include = [
+    "CHANGELOG",
+    "AUTHORS",
+    "LICENSE",
+    { path = "docs", format = "sdist" },
+    { path = "gulpfile.js", format = "sdist" },
+    { path = "package.json", format = "sdist" },
+    { path = "demo", format = "sdist" },
+]
+packages = [{ include = "zinnia" }]
+
+[tool.poetry.dependencies]
+django-tagging = { source = "private_index" }
+django-xmlrpc = { source = "private_index" }
+
+[[tool.poetry.source]]
+name = "private_index"
+url = "https://gitlab.com/api/v4/projects/14215913/packages/pypi/simple"
+priority = "supplemental"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+django-upgrade = "^1.25.0"
+flake8 = "^7.2.0"
+pytest = "^8.4.0"
+pytest-django = "^4.11.1"
+pytest-cov = "^6.1.1"
+black = "^25.1.0"
+flake8-import-order = "^0.18.2"
+flake8-polyfill = "^1.0.2"
+pep8-naming = "^0.15.1"
+
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.4"
+sphinxcontrib-websupport = "^2.0.0"
+sphinx-rtd-theme = "^3.0.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
+target-version = ['py310', 'py311']
