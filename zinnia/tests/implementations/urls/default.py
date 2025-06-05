@@ -1,5 +1,5 @@
 """Test urls for the zinnia project"""
-from django.conf.urls import include
+from django.urls import include
 from django.contrib import admin
 from django.urls import path
 from django_xmlrpc.views import handle_xmlrpc

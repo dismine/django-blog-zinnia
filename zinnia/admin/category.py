@@ -23,6 +23,9 @@ class CategoryAdmin(admin.ModelAdmin):
         self.form.admin_site = admin_site
         super(CategoryAdmin, self).__init__(model, admin_site)
 
+    @admin.display(
+        description=_('tree path')
+    )
     def get_tree_path(self, category):
         """
         Return the category's tree path in HTML.
@@ -33,4 +36,3 @@ class CategoryAdmin(admin.ModelAdmin):
                 category.get_absolute_url(), category.tree_path)
         except NoReverseMatch:
             return f'/{category.tree_path}/'
-    get_tree_path.short_description = _('tree path')

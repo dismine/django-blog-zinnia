@@ -77,6 +77,9 @@ class EntryAdmin(admin.ModelAdmin):
         super(EntryAdmin, self).__init__(model, admin_site)
 
     # Custom Display
+    @admin.display(
+        description=_('title')
+    )
     def get_title(self, entry):
         """
         Return the title with word count and number of comments.
@@ -91,8 +94,10 @@ class EntryAdmin(admin.ModelAdmin):
                     {'title': title,
                  'reactions': reaction_count}
         return title
-    get_title.short_description = _('title')
 
+    @admin.display(
+        description=_('author(s)')
+    )
     def get_authors(self, entry):
         """
         Return the authors in HTML.
@@ -107,8 +112,10 @@ class EntryAdmin(admin.ModelAdmin):
             return ', '.join(
                 [conditional_escape(getattr(author, author.USERNAME_FIELD))
                  for author in entry.authors.all()])
-    get_authors.short_description = _('author(s)')
 
+    @admin.display(
+        description=_('category(s)')
+    )
     def get_categories(self, entry):
         """
         Return the categories linked in HTML.
@@ -121,8 +128,10 @@ class EntryAdmin(admin.ModelAdmin):
         except NoReverseMatch:
             return ', '.join([conditional_escape(category.title)
                               for category in entry.categories.all()])
-    get_categories.short_description = _('category(s)')
 
+    @admin.display(
+        description=_('tag(s)')
+    )
     def get_tags(self, entry):
         """
         Return the tags linked in HTML.
@@ -134,8 +143,10 @@ class EntryAdmin(admin.ModelAdmin):
                  for tag in entry.tags_list])
         except NoReverseMatch:
             return conditional_escape(entry.tags)
-    get_tags.short_description = _('tag(s)')
 
+    @admin.display(
+        description=_('site(s)')
+    )
     def get_sites(self, entry):
         """
         Return the sites linked in HTML.
@@ -148,8 +159,10 @@ class EntryAdmin(admin.ModelAdmin):
             ', ', '<a href="{}://{}{}" target="blank">{}</a>',
             [(settings.PROTOCOL, site.domain, index_url,
               conditional_escape(site.name)) for site in entry.sites.all()])
-    get_sites.short_description = _('site(s)')
 
+    @admin.display(
+        description=_('short url')
+    )
     def get_short_url(self, entry):
         """
         Return the short url in HTML.
@@ -160,15 +173,16 @@ class EntryAdmin(admin.ModelAdmin):
             short_url = entry.get_absolute_url()
         return format_html('<a href="{url}" target="blank">{url}</a>',
                            url=short_url)
-    get_short_url.short_description = _('short url')
 
+    @admin.display(
+        description=_('is visible'),
+        boolean=True,
+    )
     def get_is_visible(self, entry):
         """
         Admin wrapper for entry.is_visible.
         """
         return entry.is_visible
-    get_is_visible.boolean = True
-    get_is_visible.short_description = _('is visible')
 
     # Custom Methods
     def get_queryset(self, request):
@@ -238,6 +252,9 @@ class EntryAdmin(admin.ModelAdmin):
         return actions
 
     # Custom Actions
+    @admin.action(
+        description=_('Set the entries to the user')
+    )
     def make_mine(self, request, queryset):
         """
         Set the entries to the current user.
@@ -248,8 +265,10 @@ class EntryAdmin(admin.ModelAdmin):
                 entry.authors.add(author)
         self.message_user(
             request, _('The selected entries now belong to you.'))
-    make_mine.short_description = _('Set the entries to the user')
 
+    @admin.action(
+        description=_('Set entries selected as published')
+    )
     def make_published(self, request, queryset):
         """
         Set entries selected as published.
@@ -259,8 +278,10 @@ class EntryAdmin(admin.ModelAdmin):
         self.ping_directories(request, queryset, messages=False)
         self.message_user(
             request, _('The selected entries are now marked as published.'))
-    make_published.short_description = _('Set entries selected as published')
 
+    @admin.action(
+        description=_('Set entries selected as hidden')
+    )
     def make_hidden(self, request, queryset):
         """
         Set entries selected as hidden.
@@ -269,8 +290,11 @@ class EntryAdmin(admin.ModelAdmin):
         EntryPublishedVectorBuilder().cache_flush()
         self.message_user(
             request, _('The selected entries are now marked as hidden.'))
-    make_hidden.short_description = _('Set entries selected as hidden')
 
+    @admin.action(
+        description=_('Close the comments for '
+                                                 'selected entries')
+    )
     def close_comments(self, request, queryset):
         """
         Close the comments for selected entries.
@@ -278,9 +302,11 @@ class EntryAdmin(admin.ModelAdmin):
         queryset.update(comment_enabled=False)
         self.message_user(
             request, _('Comments are now closed for selected entries.'))
-    close_comments.short_description = _('Close the comments for '
-                                         'selected entries')
 
+    @admin.action(
+        description=_(
+                'Close the pingbacks for selected entries')
+    )
     def close_pingbacks(self, request, queryset):
         """
         Close the pingbacks for selected entries.
@@ -288,9 +314,11 @@ class EntryAdmin(admin.ModelAdmin):
         queryset.update(pingback_enabled=False)
         self.message_user(
             request, _('Pingbacks are now closed for selected entries.'))
-    close_pingbacks.short_description = _(
-        'Close the pingbacks for selected entries')
 
+    @admin.action(
+        description=_(
+                'Close the trackbacks for selected entries')
+    )
     def close_trackbacks(self, request, queryset):
         """
         Close the trackbacks for selected entries.
@@ -298,9 +326,11 @@ class EntryAdmin(admin.ModelAdmin):
         queryset.update(trackback_enabled=False)
         self.message_user(
             request, _('Trackbacks are now closed for selected entries.'))
-    close_trackbacks.short_description = _(
-        'Close the trackbacks for selected entries')
 
+    @admin.action(
+        description=_(
+                'Put the selected entries on top at the current date')
+    )
     def put_on_top(self, request, queryset):
         """
         Put the selected entries on top at the current date.
@@ -309,9 +339,10 @@ class EntryAdmin(admin.ModelAdmin):
         self.ping_directories(request, queryset, messages=False)
         self.message_user(request, _(
             'The selected entries are now set at the current date.'))
-    put_on_top.short_description = _(
-        'Put the selected entries on top at the current date')
 
+    @admin.action(
+        description=_('Mark selected entries as featured')
+    )
     def mark_featured(self, request, queryset):
         """
         Mark selected as featured post.
@@ -319,8 +350,11 @@ class EntryAdmin(admin.ModelAdmin):
         queryset.update(featured=True)
         self.message_user(
             request, _('Selected entries are now marked as featured.'))
-    mark_featured.short_description = _('Mark selected entries as featured')
 
+    @admin.action(
+        description=_(
+                'Unmark selected entries as featured')
+    )
     def unmark_featured(self, request, queryset):
         """
         Un-Mark selected featured posts.
@@ -328,8 +362,6 @@ class EntryAdmin(admin.ModelAdmin):
         queryset.update(featured=False)
         self.message_user(
             request, _('Selected entries are no longer marked as featured.'))
-    unmark_featured.short_description = _(
-        'Unmark selected entries as featured')
 
     def ping_directories(self, request, queryset, messages=True):
         """
