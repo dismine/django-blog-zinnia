@@ -33,7 +33,7 @@ def pearson_score(list1, list2):
     num = prod_sum - (sum1 * sum2 / float(size))
     den = sqrt((sum_sq1 - pow(sum1, 2.0) / size) * (sum_sq2 - pow(sum2, 2.0) / size))
 
-    return num / den if den != 0 else 0.0
+    return num / den
 
 
 class ModelVectorBuilder(object):
