@@ -70,6 +70,7 @@ class BaseListFilterTestCase(TestCase):
             modeladmin.list_editable,
             modeladmin,
             modeladmin.sortable_by,
+            modeladmin.search_help_text,
         )
 
 

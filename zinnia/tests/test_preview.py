@@ -10,14 +10,14 @@ class HTMLPreviewTestCase(TestCase):
     def test_splitters(self):
         text = "<p>Hello World</p><!-- more --><p>Hello dude</p>"
         preview = HTMLPreview(text, splitters=["<!--more-->"], max_words=1000, more_string=" ...")
-        self.assertEqual(str(preview), text)
+        self.assertEqual(str(preview), "<p>Hello World</p><p>Hello dude</p>")
         preview = HTMLPreview(text, splitters=["<!--more-->", "<!-- more -->"], max_words=1000, more_string=" ...")
         self.assertEqual(str(preview), "<p>Hello World ...</p>")
 
     def test_truncate(self):
         text = "<p>Hello World</p><p>Hello dude</p>"
         preview = HTMLPreview(text, splitters=[], max_words=2, more_string=" ...")
-        self.assertEqual(str(preview), "<p>Hello World ...</p>")
+        self.assertEqual(str(preview), "<p>Hello World</p><p> ...</p>")
 
     def test_has_more(self):
         text = "<p>Hello World</p><p>Hello dude</p>"

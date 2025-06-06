@@ -10,10 +10,6 @@ SECRET_KEY = "secret-key"
 
 ROOT_URLCONF = "zinnia.tests.implementations.urls.default"
 
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.SHA1PasswordHasher'
-]
-
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

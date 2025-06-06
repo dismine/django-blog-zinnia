@@ -1,7 +1,7 @@
 """Utils for Zinnia's tests"""
 
 import functools
-from datetime import datetime as original_datetime
+from datetime import datetime as original_datetime, timezone as datetime_timezone
 from io import BytesIO
 from unittest import SkipTest
 from unittest import skipIf
@@ -40,7 +40,7 @@ def omniscient_datetime(*args):
     """
     d = original_datetime(*args)
     if settings.USE_TZ:
-        d = timezone.make_aware(d, timezone.utc)
+        d = timezone.make_aware(d, datetime_timezone.utc)
     return d
 
 
