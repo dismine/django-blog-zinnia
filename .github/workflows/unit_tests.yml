@@ -1,0 +1,91 @@
+name: UnitTests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.10-slim
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: zinnia
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mysql:
+        image: mysql
+        ports:
+          - 3306
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: zinnia
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5    
+
+    strategy:
+      matrix:
+        python: [ '3.10', '3.11', '3.12', '3.13' ]
+        django_version: [ '5.2.*' ]
+        database: [ sqlite, postgres, mysql ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          virtualenvs-path: .venv
+          installer-parallel: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install MySQL dependencies
+        if: matrix.database == 'mysql'
+        run: apt-get update && apt-get install -y gcc default-libmysqlclient-dev pkg-config
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          poetry add Django@${{ matrix.django_version }}
+          if [[ "${{ matrix.database }}" == "postgres" ]]; then
+            poetry add psycopg[binary];
+          elif [[ "${{ matrix.database }}" == "mysql" ]]; then
+            poetry add mysqlclient;
+          fi
+          poetry install --with dev --no-interaction
+
+      - name: Setup MySQL Timezone Data
+        if: matrix.database == 'mysql'
+        run: |
+          mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+
+      - name: Run Flake8
+        run: |
+          poetry run flake8 zinnia
+
+      - name: Run Tests
+        run: |
+          export DJANGO_SETTINGS_MODULE=zinnia.tests.implementations.${{ matrix.database }}
+          poetry run pytest

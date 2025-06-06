@@ -7,6 +7,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "zinnia",
         "USER": "postgres",
-        "HOST": "localhost",
+        "PASSWORD": "postgres",
+        "HOST": "postgres",
     }
 }
