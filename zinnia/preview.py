@@ -1,4 +1,5 @@
 """Preview for Zinnia"""
+
 from __future__ import division
 
 from bs4 import BeautifulSoup
@@ -17,10 +18,14 @@ class HTMLPreview(object):
     Build an HTML preview of an HTML content.
     """
 
-    def __init__(self, content, lead='',
-                 splitters=PREVIEW_SPLITTERS,
-                 max_words=PREVIEW_MAX_WORDS,
-                 more_string=PREVIEW_MORE_STRING):
+    def __init__(
+        self,
+        content,
+        lead="",
+        splitters=PREVIEW_SPLITTERS,
+        max_words=PREVIEW_MAX_WORDS,
+        more_string=PREVIEW_MORE_STRING,
+    ):
         self._preview = None
 
         self.lead = lead
@@ -71,16 +76,14 @@ class HTMLPreview(object):
         """
         Truncate the content with the Truncator object.
         """
-        return Truncator(self.content).words(
-            self.max_words, self.more_string, html=True)
+        return Truncator(self.content).words(self.max_words, self.more_string, html=True)
 
     def split(self, splitter):
         """
         Split the HTML content with a marker
         without breaking closing markups.
         """
-        soup = BeautifulSoup(self.content.split(splitter)[0],
-                             'html.parser')
+        soup = BeautifulSoup(self.content.split(splitter)[0], "html.parser")
         last_string = soup.find_all(text=True)[-1]
         last_string.replace_with(last_string.string + self.more_string)
         return soup
@@ -91,15 +94,14 @@ class HTMLPreview(object):
         Return the total of words contained
         in the content and in the lead.
         """
-        return len(strip_tags(f'{self.lead} {self.content}').split())
+        return len(strip_tags(f"{self.lead} {self.content}").split())
 
     @cached_property
     def displayed_words(self):
         """
         Return the number of words displayed in the preview.
         """
-        return (len(strip_tags(self.preview).split()) -
-                (len(self.more_string.split()) * int(not bool(self.lead))))
+        return len(strip_tags(self.preview).split()) - (len(self.more_string.split()) * int(not bool(self.lead)))
 
     @cached_property
     def remaining_words(self):
