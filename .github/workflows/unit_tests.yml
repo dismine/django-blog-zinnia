@@ -65,10 +65,10 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
           poetry add Django@${{ matrix.django_version }}
-          if [[ "${{ matrix.database }}" == "postgres" ]]; then
-            poetry add psycopg[binary];
-          elif [[ "${{ matrix.database }}" == "mysql" ]]; then
-            poetry add mysqlclient;
+          if [ "${{ matrix.database }}" == "postgres" ]; then
+            poetry add psycopg[binary]
+          elif [ "${{ matrix.database }}" == "mysql" ]; then
+            poetry add mysqlclient
           fi
           poetry install --with dev --no-interaction
 
