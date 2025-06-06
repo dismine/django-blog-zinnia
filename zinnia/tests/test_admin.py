@@ -52,7 +52,7 @@ class BaseAdminTestCase(TestCase):
             self.assertEqual(func(*args), result_poor)
 
 
-class TestMessageBackend(object):
+class MessageBackendForTest(object):
     """Message backend for testing"""
 
     def __init__(self, *ka, **kw):
@@ -301,7 +301,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
     def test_make_mine(self):
         user = Author.objects.create_user("user", "user@exemple.com")
         self.request.user = User.objects.get(pk=user.pk)
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.assertEqual(user.entries.count(), 0)
         self.admin.make_mine(self.request, Entry.objects.all())
         self.assertEqual(user.entries.count(), 1)
@@ -310,7 +310,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
     def test_make_published(self):
         original_ping_directories = settings.PING_DIRECTORIES
         settings.PING_DIRECTORIES = []
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.entry.sites.add(Site.objects.get_current())
         self.assertEqual(Entry.published.count(), 0)
         self.admin.make_published(self.request, Entry.objects.all())
@@ -319,7 +319,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
         settings.PING_DIRECTORIES = original_ping_directories
 
     def test_make_hidden(self):
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.entry.status = PUBLISHED
         self.entry.save()
         self.entry.sites.add(Site.objects.get_current())
@@ -329,21 +329,21 @@ class EntryAdminTestCase(BaseAdminTestCase):
         self.assertEqual(len(self.request._messages.messages), 1)
 
     def test_close_comments(self):
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.assertEqual(Entry.objects.filter(comment_enabled=True).count(), 1)
         self.admin.close_comments(self.request, Entry.objects.all())
         self.assertEqual(Entry.objects.filter(comment_enabled=True).count(), 0)
         self.assertEqual(len(self.request._messages.messages), 1)
 
     def test_close_pingbacks(self):
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.assertEqual(Entry.objects.filter(pingback_enabled=True).count(), 1)
         self.admin.close_pingbacks(self.request, Entry.objects.all())
         self.assertEqual(Entry.objects.filter(pingback_enabled=True).count(), 0)
         self.assertEqual(len(self.request._messages.messages), 1)
 
     def test_close_trackbacks(self):
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.assertEqual(Entry.objects.filter(trackback_enabled=True).count(), 1)
         self.admin.close_trackbacks(self.request, Entry.objects.all())
         self.assertEqual(Entry.objects.filter(trackback_enabled=True).count(), 0)
@@ -352,7 +352,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
     def test_put_on_top(self):
         original_ping_directories = settings.PING_DIRECTORIES
         settings.PING_DIRECTORIES = []
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.entry.publication_date = datetime(2011, 1, 1, 12, 0)
         self.admin.put_on_top(self.request, Entry.objects.all())
         self.assertEqual(Entry.objects.get(pk=self.entry.pk).creation_date.date(), timezone.now().date())
@@ -360,7 +360,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
         settings.PING_DIRECTORIES = original_ping_directories
 
     def test_mark_unmark_featured(self):
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.assertEqual(Entry.objects.filter(featured=True).count(), 0)
         self.admin.mark_featured(self.request, Entry.objects.all())
         self.assertEqual(Entry.objects.filter(featured=True).count(), 1)
@@ -382,7 +382,7 @@ class EntryAdminTestCase(BaseAdminTestCase):
         original_ping_directories = settings.PING_DIRECTORIES
         settings.PING_DIRECTORIES = ["http://ping.com/ping"]
 
-        self.request._messages = TestMessageBackend()
+        self.request._messages = MessageBackendForTest()
         self.admin.ping_directories(self.request, Entry.objects.all(), False)
         self.assertEqual(len(self.request._messages.messages), 0)
         self.admin.ping_directories(self.request, Entry.objects.all())

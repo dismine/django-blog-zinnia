@@ -19,7 +19,7 @@ from zinnia.models.category import Category
 from zinnia.models.entry import Entry
 from zinnia.settings import UPLOAD_TO
 from zinnia.signals import disconnect_entry_signals
-from zinnia.tests.utils import TestTransport
+from zinnia.tests.utils import MetaWeblogTransport
 from zinnia.tests.utils import datetime
 from zinnia.tests.utils import skip_if_custom_user
 from zinnia.xmlrpc.metaweblog import authenticate
@@ -72,7 +72,7 @@ class MetaWeblogTestCase(TestCase):
         self.entry_2.categories.add(self.categories[0])
         self.entry_2.sites.add(self.site)
         # Instanciating the server proxy
-        self.server = ServerProxy("http://localhost:8000/xmlrpc/", transport=TestTransport())
+        self.server = ServerProxy("http://localhost:8000/xmlrpc/", transport=MetaWeblogTransport())
 
     def test_authenticate(self):
         self.assertRaises(Fault, authenticate, "badcontributor", "badpassword")

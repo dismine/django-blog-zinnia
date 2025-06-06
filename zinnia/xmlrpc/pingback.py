@@ -44,7 +44,7 @@ def generate_pingback_content(soup, target, max_length, trunc_char="..."):
     """
     link = soup.find("a", href=target)
 
-    content = strip_tags(str(link.findParent()))
+    content = strip_tags(str(link.find_parent()))
     index = content.index(link.string)
 
     if len(content) > max_length:

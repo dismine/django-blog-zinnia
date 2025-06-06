@@ -55,19 +55,6 @@ class UsernamePathConverter:
         return value
 
 
-class PathPathConverter:
-    """
-    Pattern converter for path string (such as ``foo/bar``)
-    """
-    regex = r"[-\/\w]+"
-
-    def to_python(self, value):
-        return value
-
-    def to_url(self, value):
-        return value
-
-
 class TagPathConverter:
     """
     Pattern converter for tag string

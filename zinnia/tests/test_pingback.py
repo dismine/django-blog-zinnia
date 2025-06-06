@@ -25,7 +25,7 @@ from zinnia.models.entry import Entry
 from zinnia.signals import connect_discussion_signals
 from zinnia.signals import disconnect_discussion_signals
 from zinnia.signals import disconnect_entry_signals
-from zinnia.tests.utils import TestTransport
+from zinnia.tests.utils import MetaWeblogTransport
 from zinnia.tests.utils import datetime
 from zinnia.tests.utils import skip_if_custom_user
 from zinnia.xmlrpc.pingback import generate_pingback_content
@@ -114,7 +114,7 @@ class PingBackTestCase(TestCase):
         self.second_entry.categories.add(self.category)
         self.second_entry.authors.add(self.author)
         # Instanciating the server proxy
-        self.server = ServerProxy("http://example.com/xmlrpc/", transport=TestTransport())
+        self.server = ServerProxy("http://example.com/xmlrpc/", transport=MetaWeblogTransport())
 
     def tearDown(self):
         import zinnia.xmlrpc.pingback

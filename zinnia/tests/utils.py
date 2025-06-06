@@ -16,7 +16,7 @@ from django.test.client import Client
 from django.utils import timezone
 
 
-class TestTransport(Transport):
+class MetaWeblogTransport(Transport):
     """
     Handles connections to XML-RPC server through Django test client.
     """

@@ -84,7 +84,7 @@ class HTMLPreview(object):
         without breaking closing markups.
         """
         soup = BeautifulSoup(self.content.split(splitter)[0], "html.parser")
-        last_string = soup.find_all(text=True)[-1]
+        last_string = soup.find_all(string=True)[-1]
         last_string.replace_with(last_string.string + self.more_string)
         return soup
 

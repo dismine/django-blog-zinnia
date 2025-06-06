@@ -20,7 +20,6 @@ register_converter(converters.FourDigitYearConverter, 'yyyy')
 register_converter(converters.TwoDigitMonthConverter, 'mm')
 register_converter(converters.TwoDigitDayConverter, 'dd')
 register_converter(converters.UsernamePathConverter, 'username')
-register_converter(converters.PathPathConverter, 'path')
 register_converter(converters.TagPathConverter, 'tag')
 register_converter(converters.TokenPathConverter, 'token')
 
