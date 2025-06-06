@@ -59,7 +59,7 @@ jobs:
 
       - name: Install MySQL dependencies
         if: matrix.database == 'mysql'
-        run: apt-get update && apt-get install -y gcc default-libmysqlclient-dev pkg-config default-mysql-client
+        run: apt-get update && apt-get install -y gcc default-libmysqlclient-dev pkg-config
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -71,11 +71,6 @@ jobs:
             poetry add mysqlclient
           fi
           poetry install --with dev --no-interaction
-
-      - name: Setup MySQL Timezone Data
-        if: matrix.database == 'mysql'
-        run: |
-          mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql -h mysql -p mysql
 
       - name: Run Flake8
         run: |
