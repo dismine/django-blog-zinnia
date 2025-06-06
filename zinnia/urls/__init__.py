@@ -1,9 +1,10 @@
 """Defaults urls for the Zinnia project"""
+
 from django.urls import include, path, register_converter
 from django.utils.translation import gettext_lazy
 
-from zinnia.settings import TRANSLATED_URLS
 from zinnia import converters
+from zinnia.settings import TRANSLATED_URLS
 
 
 def i18n_url(url, translate=TRANSLATED_URLS):

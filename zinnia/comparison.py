@@ -3,18 +3,19 @@
 import contextlib
 from math import sqrt
 
-import regex as re
 from django.contrib.sites.models import Site
 from django.core.cache import InvalidCacheBackendError
 from django.core.cache import caches
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 
+import regex as re
+
 from zinnia.models.entry import Entry
 from zinnia.settings import COMPARISON_FIELDS
 from zinnia.settings import STOP_WORDS
 
-PUNCTUATION = re.compile(r'\p{P}+')
+PUNCTUATION = re.compile(r"\p{P}+")
 
 
 def pearson_score(list1, list2):
@@ -24,30 +25,30 @@ def pearson_score(list1, list2):
     size = len(list1)
     sum1 = sum(list1)
     sum2 = sum(list2)
-    sum_sq1 = sum(pow(l, 2) for l in list1)
-    sum_sq2 = sum(pow(l, 2) for l in list2)
+    sum_sq1 = sum(pow(item, 2) for item in list1)
+    sum_sq2 = sum(pow(item, 2) for item in list2)
 
     prod_sum = sum(list1[i] * list2[i] for i in range(size))
 
     num = prod_sum - (sum1 * sum2 / float(size))
-    den = sqrt((sum_sq1 - pow(sum1, 2.0) / size) *
-               (sum_sq2 - pow(sum2, 2.0) / size))
+    den = sqrt((sum_sq1 - pow(sum1, 2.0) / size) * (sum_sq2 - pow(sum2, 2.0) / size))
 
-    return num / den
+    return num / den if den != 0 else 0.0
 
 
 class ModelVectorBuilder(object):
     """
     Build a list of vectors based on a Queryset.
     """
+
     limit = None
     fields = None
     queryset = None
 
     def __init__(self, **kwargs):
-        self.limit = kwargs.pop('limit', self.limit)
-        self.fields = kwargs.pop('fields', self.fields)
-        self.queryset = kwargs.pop('queryset', self.queryset)
+        self.limit = kwargs.pop("limit", self.limit)
+        self.fields = kwargs.pop("fields", self.fields)
+        self.queryset = kwargs.pop("queryset", self.queryset)
 
     def get_related(self, instance, number):
         """
@@ -74,9 +75,7 @@ class ModelVectorBuilder(object):
             if o_id != object_id:
                 with contextlib.suppress(ZeroDivisionError):
                     object_related[o_id] = score(object_vector, o_vector)
-        return sorted(
-            object_related.items(), key=lambda k_v: (k_v[1], k_v[0]), reverse=True
-        )
+        return sorted(object_related.items(), key=lambda k_v: (k_v[1], k_v[0]), reverse=True)
 
     @cached_property
     def raw_dataset(self):
@@ -85,13 +84,13 @@ class ModelVectorBuilder(object):
         and the specified fields.
         """
         dataset = {}
-        queryset = self.queryset.values_list(*(['pk'] + self.fields))
+        queryset = self.queryset.values_list(*(["pk"] + self.fields))
         if self.limit:
-            queryset = queryset[:self.limit]
+            queryset = queryset[: self.limit]
         for item in queryset:
             item = list(item)
             item_pk = item.pop(0)
-            datas = ' '.join(map(str, item))
+            datas = " ".join(map(str, item))
             dataset[item_pk] = self.raw_clean(datas)
         return dataset
 
@@ -99,9 +98,9 @@ class ModelVectorBuilder(object):
         """
         Apply a cleaning on raw datas.
         """
-        datas = strip_tags(datas)             # Remove HTML
-        datas = STOP_WORDS.rebase(datas, '')  # Remove STOP WORDS
-        datas = PUNCTUATION.sub('', datas)    # Remove punctuation
+        datas = strip_tags(datas)  # Remove HTML
+        datas = STOP_WORDS.rebase(datas, "")  # Remove STOP WORDS
+        datas = PUNCTUATION.sub("", datas)  # Remove punctuation
         datas = datas.lower()
         return [d for d in datas.split() if len(d) > 1]
 
@@ -122,14 +121,9 @@ class ModelVectorBuilder(object):
                 words_item_total[word] += 1
             data[instance] = words_item_total
 
-        columns = sorted(words_total.keys(),
-                         key=lambda w: words_total[w],
-                         reverse=True)[:250]
+        columns = sorted(words_total.keys(), key=lambda w: words_total[w], reverse=True)[:250]
         columns = sorted(columns)
-        dataset = {
-            instance: [data[instance].get(word, 0) for word in columns]
-            for instance in data
-        }
+        dataset = {instance: [data[instance].get(word, 0) for word in columns] for instance in data}
         return columns, dataset
 
     @property
@@ -159,9 +153,9 @@ class CachedModelVectorBuilder(ModelVectorBuilder):
         if fail use the ``default`` cache backend config.
         """
         try:
-            comparison_cache = caches['comparison']
+            comparison_cache = caches["comparison"]
         except InvalidCacheBackendError:
-            comparison_cache = caches['default']
+            comparison_cache = caches["default"]
         return comparison_cache
 
     @property
@@ -197,10 +191,9 @@ class CachedModelVectorBuilder(ModelVectorBuilder):
         Implement high level cache system for get_related.
         """
         cache = self.cache
-        cache_key = f'{instance.pk}:{number}'
+        cache_key = f"{instance.pk}:{number}"
         if cache_key not in cache:
-            related_objects = super(CachedModelVectorBuilder,
-                                    self).get_related(instance, number)
+            related_objects = super(CachedModelVectorBuilder, self).get_related(instance, number)
             cache[cache_key] = related_objects
             self.cache = cache
         return cache[cache_key]
@@ -211,10 +204,9 @@ class CachedModelVectorBuilder(ModelVectorBuilder):
         Implement high level cache system for columns and dataset.
         """
         cache = self.cache
-        cache_key = 'columns_dataset'
+        cache_key = "columns_dataset"
         if cache_key not in cache:
-            columns_dataset = super(CachedModelVectorBuilder, self
-                                    ).columns_dataset
+            columns_dataset = super(CachedModelVectorBuilder, self).columns_dataset
             cache[cache_key] = columns_dataset
             self.cache = cache
         return cache[cache_key]
@@ -224,6 +216,7 @@ class EntryPublishedVectorBuilder(CachedModelVectorBuilder):
     """
     Vector builder for published entries.
     """
+
     limit = 100
     queryset = Entry.published
     fields = COMPARISON_FIELDS
@@ -233,4 +226,4 @@ class EntryPublishedVectorBuilder(CachedModelVectorBuilder):
         """
         Key for the cache handling current site.
         """
-        return f'{super(EntryPublishedVectorBuilder, self).cache_key}:{Site.objects.get_current().pk}'
+        return f"{super(EntryPublishedVectorBuilder, self).cache_key}:{Site.objects.get_current().pk}"

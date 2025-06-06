@@ -1,4 +1,5 @@
 """Search module with complex query parsing for Zinnia"""
+
 from django.db.models import Q
 
 from pyparsing import CaselessLiteral
@@ -10,8 +11,8 @@ from pyparsing import StringEnd
 from pyparsing import Word
 from pyparsing import WordEnd
 from pyparsing import alphas
-from pyparsing import opAssoc
 from pyparsing import infixNotation
+from pyparsing import opAssoc
 from pyparsing import printables
 from pyparsing import quotedString
 from pyparsing import removeQuotes
@@ -26,8 +27,8 @@ def create_q(token):
     """
     Creates the Q() object.
     """
-    meta = getattr(token, 'meta', None)
-    query = getattr(token, 'query', '')
+    meta = getattr(token, "meta", None)
+    query = getattr(token, "query", "")
     wildcards = None
 
     if isinstance(query, str):  # Unicode -> Quoted string
@@ -35,14 +36,14 @@ def create_q(token):
     elif len(query) == 1:
         search = query[0]
     elif len(query) == 3:
-        wildcards = 'BOTH'
+        wildcards = "BOTH"
         search = query[1]
     elif len(query) == 2:
-        if query[0] == '*':
-            wildcards = 'START'
+        if query[0] == "*":
+            wildcards = "START"
             search = query[1]
         else:
-            wildcards = 'END'
+            wildcards = "END"
             search = query[0]
 
     # Ignore short term and stop words
@@ -52,32 +53,28 @@ def create_q(token):
     if not meta:
         q = Q()
         for field in SEARCH_FIELDS:
-            q |= Q(**{f'{field}__icontains': search})
+            q |= Q(**{f"{field}__icontains": search})
         return q
 
-    if meta == 'category':
-        if wildcards == 'BOTH':
-            return (Q(categories__title__icontains=search) |
-                    Q(categories__slug__icontains=search))
-        elif wildcards == 'END':
-            return (Q(categories__title__istartswith=search) |
-                    Q(categories__slug__istartswith=search))
-        elif wildcards == 'START':
-            return (Q(categories__title__iendswith=search) |
-                    Q(categories__slug__iendswith=search))
+    if meta == "category":
+        if wildcards == "BOTH":
+            return Q(categories__title__icontains=search) | Q(categories__slug__icontains=search)
+        elif wildcards == "END":
+            return Q(categories__title__istartswith=search) | Q(categories__slug__istartswith=search)
+        elif wildcards == "START":
+            return Q(categories__title__iendswith=search) | Q(categories__slug__iendswith=search)
         else:
-            return (Q(categories__title__iexact=search) |
-                    Q(categories__slug__iexact=search))
-    elif meta == 'author':
-        if wildcards == 'BOTH':
-            return Q(**{f'authors__{Author.USERNAME_FIELD}__icontains': search})
-        elif wildcards == 'END':
-            return Q(**{f'authors__{Author.USERNAME_FIELD}__istartswith': search})
-        elif wildcards == 'START':
-            return Q(**{f'authors__{Author.USERNAME_FIELD}__iendswith': search})
+            return Q(categories__title__iexact=search) | Q(categories__slug__iexact=search)
+    elif meta == "author":
+        if wildcards == "BOTH":
+            return Q(**{f"authors__{Author.USERNAME_FIELD}__icontains": search})
+        elif wildcards == "END":
+            return Q(**{f"authors__{Author.USERNAME_FIELD}__istartswith": search})
+        elif wildcards == "START":
+            return Q(**{f"authors__{Author.USERNAME_FIELD}__iendswith": search})
         else:
-            return Q(**{f'authors__{Author.USERNAME_FIELD}__iexact': search})
-    elif meta == 'tag':  # TODO: tags ignore wildcards
+            return Q(**{f"authors__{Author.USERNAME_FIELD}__iexact": search})
+    elif meta == "tag":  # TODO: tags ignore wildcards
         return Q(tags__icontains=search)
 
 
@@ -86,44 +83,45 @@ def union_q(token):
     Appends all the Q() objects.
     """
     query = Q()
-    operation = 'and'
+    operation = "and"
     negation = False
 
     for t in token:
         if type(t) is ParseResults:  # See tokens recursively
             query &= union_q(t)
-        elif t in ('or', 'and'):  # Set the new op and go to next token
+        elif t in ("or", "and"):  # Set the new op and go to next token
             operation = t
-        elif t == '-':  # Next tokens needs to be negated
+        elif t == "-":  # Next tokens needs to be negated
             negation = True
         else:  # Append to query the token
             if negation:
                 t = ~t
-            if operation == 'or':
+            if operation == "or":
                 query |= t
             else:
                 query &= t
     return query
 
 
-NO_BRTS = printables.replace('(', '').replace(')', '')
-SINGLE = Word(NO_BRTS.replace('*', ''))
-WILDCARDS = Optional('*') + SINGLE + Optional('*') + WordEnd(wordChars=NO_BRTS)
+NO_BRTS = printables.replace("(", "").replace(")", "")
+SINGLE = Word(NO_BRTS.replace("*", ""))
+WILDCARDS = Optional("*") + SINGLE + Optional("*") + WordEnd(wordChars=NO_BRTS)
 QUOTED = quotedString.setParseAction(removeQuotes)
 
-OPER_AND = CaselessLiteral('and')
-OPER_OR = CaselessLiteral('or')
-OPER_NOT = '-'
+OPER_AND = CaselessLiteral("and")
+OPER_OR = CaselessLiteral("or")
+OPER_NOT = "-"
 
-TERM = Combine(Optional(Word(alphas).setResultsName('meta') + ':') +
-               (QUOTED.setResultsName('query') |
-                WILDCARDS.setResultsName('query')))
+TERM = Combine(
+    Optional(Word(alphas).setResultsName("meta") + ":")
+    + (QUOTED.setResultsName("query") | WILDCARDS.setResultsName("query"))
+)
 TERM.setParseAction(create_q)
 
-EXPRESSION = infixNotation(TERM, [
-    (OPER_NOT, 1, opAssoc.RIGHT),
-    (OPER_OR, 2, opAssoc.LEFT),
-    (Optional(OPER_AND, default='and'), 2, opAssoc.LEFT)])
+EXPRESSION = infixNotation(
+    TERM,
+    [(OPER_NOT, 1, opAssoc.RIGHT), (OPER_OR, 2, opAssoc.LEFT), (Optional(OPER_AND, default="and"), 2, opAssoc.LEFT)],
+)
 EXPRESSION.setParseAction(union_q)
 
 QUERY = OneOrMore(EXPRESSION) + StringEnd()

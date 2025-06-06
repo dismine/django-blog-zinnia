@@ -17,8 +17,7 @@ def get_context_first_object(context, context_lookups):
     Return the first object found in the context,
     from a list of keys.
     """
-    return get_context_first_matching_object(
-        context, context_lookups)[1]
+    return get_context_first_matching_object(context, context_lookups)[1]
 
 
 def get_context_loop_positions(context):
@@ -27,13 +26,12 @@ def get_context_loop_positions(context):
     and the non-paginated position.
     """
     try:
-        loop_counter = context['forloop']['counter']
+        loop_counter = context["forloop"]["counter"]
     except KeyError:
         return 0, 0
     try:
-        page = context['page_obj']
+        page = context["page_obj"]
     except KeyError:
         return loop_counter, loop_counter
-    total_loop_counter = ((page.number - 1) * page.paginator.per_page +
-                          loop_counter)
+    total_loop_counter = (page.number - 1) * page.paginator.per_page + loop_counter
     return total_loop_counter, loop_counter

@@ -1,4 +1,5 @@
 """Urls for the Zinnia archives"""
+
 from django.urls import path
 
 from zinnia.urls import _
@@ -65,8 +66,8 @@ today_patterns = [
          name='entry_archive_today_paginated'),
 ]
 
-archive_patterns = (index_patterns + year_patterns +
-                    week_patterns + month_patterns +
-                    day_patterns + today_patterns)
+archive_patterns = (index_patterns + year_patterns
+                    + week_patterns + month_patterns
+                    + day_patterns + today_patterns)
 
 urlpatterns = archive_patterns

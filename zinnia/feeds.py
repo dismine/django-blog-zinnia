@@ -39,21 +39,22 @@ class ZinniaFeed(Feed):
     Base Feed class for the Zinnia application,
     enriched for a more convenient usage.
     """
+
     protocol = PROTOCOL
     feed_copyright = COPYRIGHT
     feed_format = FEEDS_FORMAT
     limit = FEEDS_MAX_ITEMS
 
     def __init__(self):
-        if self.feed_format == 'atom':
+        if self.feed_format == "atom":
             self.feed_type = Atom1Feed
-            self.subtitle = getattr(self, 'description', None)
+            self.subtitle = getattr(self, "description", None)
 
     def title(self, obj=None):
         """
         Title of the feed prefixed with the site name.
         """
-        return f'{self.site.name} - {self.get_title(obj)}'
+        return f"{self.site.name} - {self.get_title(obj)}"
 
     def get_title(self, obj):
         raise NotImplementedError
@@ -70,15 +71,16 @@ class ZinniaFeed(Feed):
         """
         Return the URL of the current site.
         """
-        return f'{self.protocol}://{self.site.domain}'
+        return f"{self.protocol}://{self.site.domain}"
 
 
 class EntryFeed(ZinniaFeed):
     """
     Base Entry Feed.
     """
-    title_template = 'feeds/entry_title.html'
-    description_template = 'feeds/entry_description.html'
+
+    title_template = "feeds/entry_title.html"
+    description_template = "feeds/entry_description.html"
 
     def item_pubdate(self, item):
         """
@@ -131,13 +133,13 @@ class EntryFeed(ZinniaFeed):
         try:
             url = item.image.url
         except (AttributeError, ValueError):
-            img = BeautifulSoup(item.html_content, 'html.parser').find('img')
-            url = img.get('src') if img else None
+            img = BeautifulSoup(item.html_content, "html.parser").find("img")
+            url = img.get("src") if img else None
         self.cached_enclosure_url = url
         if url:
             url = urljoin(self.site_url, url)
-            if self.feed_format == 'rss':
-                url = url.replace('https://', 'http://')
+            if self.feed_format == "rss":
+                url = url.replace("https://", "http://")
         return url
 
     def item_enclosure_length(self, item):
@@ -149,7 +151,7 @@ class EntryFeed(ZinniaFeed):
         """
         with contextlib.suppress(AttributeError, ValueError, os.error):
             return str(item.image.size)
-        return '100000'
+        return "100000"
 
     def item_enclosure_mime_type(self, item):
         """
@@ -158,7 +160,7 @@ class EntryFeed(ZinniaFeed):
         has returned something.
         """
         mime_type, encoding = guess_type(self.cached_enclosure_url)
-        return mime_type or 'image/jpeg'
+        return mime_type or "image/jpeg"
 
 
 class LastEntries(EntryFeed):
@@ -170,26 +172,25 @@ class LastEntries(EntryFeed):
         """
         URL of last entries.
         """
-        return reverse('zinnia:entry_archive_index')
+        return reverse("zinnia:entry_archive_index")
 
     def items(self):
         """
         Items are published entries.
         """
-        return Entry.published.all()[:self.limit]
+        return Entry.published.all()[: self.limit]
 
     def get_title(self, obj):
         """
         Title of the feed
         """
-        return _('Last entries')
+        return _("Last entries")
 
     def description(self):
         """
         Description of the feed.
         """
-        return _('The last entries on the site %(object)s') % {
-            'object': self.site.name}
+        return _("The last entries on the site %(object)s") % {"object": self.site.name}
 
 
 class CategoryEntries(EntryFeed):
@@ -207,7 +208,7 @@ class CategoryEntries(EntryFeed):
         """
         Items are the published entries of the category.
         """
-        return obj.entries_published()[:self.limit]
+        return obj.entries_published()[: self.limit]
 
     def link(self, obj):
         """
@@ -219,15 +220,13 @@ class CategoryEntries(EntryFeed):
         """
         Title of the feed.
         """
-        return _('Entries for the category %(object)s') % {'object': obj.title}
+        return _("Entries for the category %(object)s") % {"object": obj.title}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return (obj.description or
-                _('The last entries categorized under %(object)s') % {
-                    'object': obj.title})
+        return obj.description or _("The last entries categorized under %(object)s") % {"object": obj.title}
 
 
 class AuthorEntries(EntryFeed):
@@ -245,7 +244,7 @@ class AuthorEntries(EntryFeed):
         """
         Items are the published entries of the author.
         """
-        return obj.entries_published()[:self.limit]
+        return obj.entries_published()[: self.limit]
 
     def link(self, obj):
         """
@@ -257,15 +256,13 @@ class AuthorEntries(EntryFeed):
         """
         Title of the feed.
         """
-        return _('Entries for the author %(object)s') % {
-            'object': smart_str(obj.__str__())}
+        return _("Entries for the author %(object)s") % {"object": smart_str(obj.__str__())}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _('The last entries by %(object)s') % {
-            'object': smart_str(obj.__str__())}
+        return _("The last entries by %(object)s") % {"object": smart_str(obj.__str__())}
 
 
 class TagEntries(EntryFeed):
@@ -283,27 +280,25 @@ class TagEntries(EntryFeed):
         """
         Items are the published entries of the tag.
         """
-        return TaggedItem.objects.get_by_model(
-            Entry.published.all(), obj)[:self.limit]
+        return TaggedItem.objects.get_by_model(Entry.published.all(), obj)[: self.limit]
 
     def link(self, obj):
         """
         URL of the tag.
         """
-        return reverse('zinnia:tag_detail', args=[obj.name])
+        return reverse("zinnia:tag_detail", args=[obj.name])
 
     def get_title(self, obj):
         """
         Title of the feed.
         """
-        return _('Entries for the tag %(object)s') % {'object': obj.name}
+        return _("Entries for the tag %(object)s") % {"object": obj.name}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _('The last entries tagged with %(object)s') % {
-            'object': obj.name}
+        return _("The last entries tagged with %(object)s") % {"object": obj.name}
 
 
 class SearchEntries(EntryFeed):
@@ -315,7 +310,7 @@ class SearchEntries(EntryFeed):
         """
         The GET parameter 'pattern' is the object.
         """
-        pattern = request.GET.get('pattern', '')
+        pattern = request.GET.get("pattern", "")
         if len(pattern) < 3:
             raise ObjectDoesNotExist
         return pattern
@@ -324,7 +319,7 @@ class SearchEntries(EntryFeed):
         """
         Items are the published entries founds.
         """
-        return Entry.published.search(obj)[:self.limit]
+        return Entry.published.search(obj)[: self.limit]
 
     def link(self, obj):
         """
@@ -336,22 +331,22 @@ class SearchEntries(EntryFeed):
         """
         Title of the feed.
         """
-        return _("Search results for '%(pattern)s'") % {'pattern': obj}
+        return _("Search results for '%(pattern)s'") % {"pattern": obj}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _("The last entries containing the pattern '%(pattern)s'") % {
-            'pattern': obj}
+        return _("The last entries containing the pattern '%(pattern)s'") % {"pattern": obj}
 
 
 class DiscussionFeed(ZinniaFeed):
     """
     Base class for discussion Feed.
     """
-    title_template = 'feeds/discussion_title.html'
-    description_template = 'feeds/discussion_description.html'
+
+    title_template = "feeds/discussion_title.html"
+    description_template = "feeds/discussion_description.html"
 
     def item_pubdate(self, item):
         """
@@ -394,28 +389,29 @@ class LastDiscussions(DiscussionFeed):
         Items are the discussions on the entries.
         """
         content_type = ContentType.objects.get_for_model(Entry)
-        return comments.get_model().objects.filter(
-            content_type=content_type, is_public=True).order_by(
-            '-submit_date')[:self.limit]
+        return (
+            comments.get_model()
+            .objects.filter(content_type=content_type, is_public=True)
+            .order_by("-submit_date")[: self.limit]
+        )
 
     def link(self):
         """
         URL of last discussions.
         """
-        return reverse('zinnia:entry_archive_index')
+        return reverse("zinnia:entry_archive_index")
 
     def get_title(self, obj):
         """
         Title of the feed.
         """
-        return _('Last discussions')
+        return _("Last discussions")
 
     def description(self):
         """
         Description of the feed.
         """
-        return _('The last discussions on the site %(object)s') % {
-            'object': self.site.name}
+        return _("The last discussions on the site %(object)s") % {"object": self.site.name}
 
 
 class EntryDiscussions(DiscussionFeed):
@@ -427,16 +423,15 @@ class EntryDiscussions(DiscussionFeed):
         """
         Retrieve the discussions by entry's slug.
         """
-        return get_object_or_404(Entry, slug=slug,
-                                 publication_date__year=year,
-                                 publication_date__month=month,
-                                 publication_date__day=day)
+        return get_object_or_404(
+            Entry, slug=slug, publication_date__year=year, publication_date__month=month, publication_date__day=day
+        )
 
     def items(self, obj):
         """
         Items are the discussions on the entry.
         """
-        return obj.discussions[:self.limit]
+        return obj.discussions[: self.limit]
 
     def link(self, obj):
         """
@@ -448,48 +443,46 @@ class EntryDiscussions(DiscussionFeed):
         """
         Title of the feed.
         """
-        return _('Discussions on %(object)s') % {'object': obj.title}
+        return _("Discussions on %(object)s") % {"object": obj.title}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _('The last discussions on the entry %(object)s') % {
-            'object': obj.title}
+        return _("The last discussions on the entry %(object)s") % {"object": obj.title}
 
 
 class EntryComments(EntryDiscussions):
     """
     Feed for comments on an entry.
     """
-    title_template = 'feeds/comment_title.html'
-    description_template = 'feeds/comment_description.html'
+
+    title_template = "feeds/comment_title.html"
+    description_template = "feeds/comment_description.html"
 
     def items(self, obj):
         """
         Items are the comments on the entry.
         """
-        return obj.comments[:self.limit]
+        return obj.comments[: self.limit]
 
     def item_link(self, item):
         """
         URL of the comment.
         """
-        return item.get_absolute_url('#comment-%(id)s-by-'
-                                     ) + slugify(item.user_name)
+        return item.get_absolute_url("#comment-%(id)s-by-") + slugify(item.user_name)
 
     def get_title(self, obj):
         """
         Title of the feed.
         """
-        return _('Comments on %(object)s') % {'object': obj.title}
+        return _("Comments on %(object)s") % {"object": obj.title}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _('The last comments on the entry %(object)s') % {
-            'object': obj.title}
+        return _("The last comments on the entry %(object)s") % {"object": obj.title}
 
     def item_enclosure_url(self, item):
         """
@@ -501,76 +494,76 @@ class EntryComments(EntryDiscussions):
         """
         Hardcoded enclosure length.
         """
-        return '100000'
+        return "100000"
 
     def item_enclosure_mime_type(self, item):
         """
         Hardcoded enclosure mimetype.
         """
-        return 'image/jpeg'
+        return "image/jpeg"
 
 
 class EntryPingbacks(EntryDiscussions):
     """
     Feed for pingbacks on an entry.
     """
-    title_template = 'feeds/pingback_title.html'
-    description_template = 'feeds/pingback_description.html'
+
+    title_template = "feeds/pingback_title.html"
+    description_template = "feeds/pingback_description.html"
 
     def items(self, obj):
         """
         Items are the pingbacks on the entry.
         """
-        return obj.pingbacks[:self.limit]
+        return obj.pingbacks[: self.limit]
 
     def item_link(self, item):
         """
         URL of the pingback.
         """
-        return item.get_absolute_url('#pingback-%(id)s')
+        return item.get_absolute_url("#pingback-%(id)s")
 
     def get_title(self, obj):
         """
         Title of the feed.
         """
-        return _('Pingbacks on %(object)s') % {'object': obj.title}
+        return _("Pingbacks on %(object)s") % {"object": obj.title}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _('The last pingbacks on the entry %(object)s') % {
-            'object': obj.title}
+        return _("The last pingbacks on the entry %(object)s") % {"object": obj.title}
 
 
 class EntryTrackbacks(EntryDiscussions):
     """
     Feed for trackbacks on an entry.
     """
-    title_template = 'feeds/trackback_title.html'
-    description_template = 'feeds/trackback_description.html'
+
+    title_template = "feeds/trackback_title.html"
+    description_template = "feeds/trackback_description.html"
 
     def items(self, obj):
         """
         Items are the trackbacks on the entry.
         """
-        return obj.trackbacks[:self.limit]
+        return obj.trackbacks[: self.limit]
 
     def item_link(self, item):
         """
         URL of the trackback.
         """
-        return item.get_absolute_url('#trackback-%(id)s')
+        return item.get_absolute_url("#trackback-%(id)s")
 
     def get_title(self, obj):
         """
         Title of the feed.
         """
-        return _('Trackbacks on %(object)s') % {'object': obj.title}
+        return _("Trackbacks on %(object)s") % {"object": obj.title}
 
     def description(self, obj):
         """
         Description of the feed.
         """
-        return _('The last trackbacks on the entry %(object)s') % {
-            'object': obj.title}
+        return _("The last trackbacks on the entry %(object)s") % {"object": obj.title}

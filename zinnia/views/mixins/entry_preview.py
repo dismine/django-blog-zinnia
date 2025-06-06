@@ -1,4 +1,5 @@
 """Preview mixins for Zinnia views"""
+
 from django.http import Http404
 from django.utils.translation import gettext as _
 
@@ -18,8 +19,8 @@ class EntryPreviewMixin(object):
         obj = super(EntryPreviewMixin, self).get_object(queryset)
         if obj.is_visible:
             return obj
-        if (self.request.user.has_perm('zinnia.can_view_all') or
-                self.request.user.pk in [
-                author.pk for author in obj.authors.all()]):
+        if self.request.user.has_perm("zinnia.can_view_all") or self.request.user.pk in [
+            author.pk for author in obj.authors.all()
+        ]:
             return obj
-        raise Http404(_('No entry found matching the query'))
+        raise Http404(_("No entry found matching the query"))

@@ -2,12 +2,13 @@
 
 import contextlib
 
-import django_comments as comments
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponsePermanentRedirect
 from django.template.defaultfilters import slugify
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.base import View
+
+import django_comments as comments
 
 
 class CommentSuccess(TemplateResponseMixin, View):
