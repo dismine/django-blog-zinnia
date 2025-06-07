@@ -55,7 +55,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: venv-${{ runner.os }}-${{ matrix.django_version }}-${{ matrix.database }}-${{ matrix.container }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install MySQL dependencies
         if: matrix.database == 'mysql'
