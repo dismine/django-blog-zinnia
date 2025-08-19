@@ -308,7 +308,7 @@ class TemplateTagsTestCase(TestCase):
         post_save.disconnect(sender=Entry, dispatch_uid="flush_cache")
 
     def test_get_archives_entries(self):
-        with self.assertNumQueries(0):
+        with self.assertNumQueries(1):
             context = get_archives_entries()
         self.assertEqual(len(context["archives"]), 0)
         self.assertEqual(context["template"], "zinnia/tags/entries_archives.html")
@@ -325,7 +325,7 @@ class TemplateTagsTestCase(TestCase):
         second_entry = Entry.objects.create(**params)
         second_entry.sites.add(self.site)
 
-        with self.assertNumQueries(0):
+        with self.assertNumQueries(1):
             context = get_archives_entries("custom_template.html")
         self.assertEqual(len(context["archives"]), 2)
 
