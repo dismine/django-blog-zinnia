@@ -1,6 +1,6 @@
 """Zinnia"""
 
-__version__ = "0.24.0+dismine.1"
+__version__ = "0.25.0+dismine.1"
 __license__ = "BSD License"
 
 __author__ = "Fantomas42"

@@ -1,6 +1,6 @@
 [project]
 name = "django-blog-zinnia"
-version = "0.24.0+dismine.1"
+version = "0.25.0+dismine.1"
 description = "A clear and powerful weblog application powered with Django"
 authors = [
     {name = "Fantomas42",email = "fantomas42@gmail.com"}
