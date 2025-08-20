@@ -334,7 +334,7 @@ class TemplateTagsTestCase(TestCase):
         self.assertEqual(context["template"], "custom_template.html")
 
     def test_get_archives_tree(self):
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(0):
             context = get_archives_entries_tree()
         self.assertEqual(len(context["archives"]), 0)
         self.assertEqual(context["template"], "zinnia/tags/entries_archives_tree.html")
@@ -351,7 +351,7 @@ class TemplateTagsTestCase(TestCase):
         second_entry = Entry.objects.create(**params)
         second_entry.sites.add(self.site)
 
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(0):
             context = get_archives_entries_tree("custom_template.html")
         self.assertEqual(len(context["archives"]), 2)
         self.assertEqual(context["archives"][0], self.make_local(second_entry.publication_date).replace(hour=0))
