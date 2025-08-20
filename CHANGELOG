@@ -1,7 +1,3 @@
-0.25.0+dismine.1 - 2025/08/19:
-------------------------------
-* Fixed incompatibility with django-parler.
-
 0.24.0+dismine.1 - 2025/06/05:
 ------------------------------
 * Minimal Django version 5.2.

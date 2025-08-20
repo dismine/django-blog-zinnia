@@ -5,9 +5,7 @@ from __future__ import absolute_import
 from calendar import HTMLCalendar
 from datetime import date
 
-from django.conf import settings
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.dates import MONTHS
 from django.utils.dates import WEEKDAYS_ABBR
 from django.utils.formats import date_format
@@ -105,17 +103,12 @@ class Calendar(HTMLCalendar):
         """
         self.current_year = theyear
         self.current_month = themonth
-
-        qs = Entry.published.filter(
-            publication_date__year=theyear,
-            publication_date__month=themonth,
-            publication_date__isnull=False,
-            publication_date__lte=timezone.now(),
-        ).values_list("publication_date", flat=True)
-
-        self.day_entries = sorted(
-            {(timezone.localtime(dt).day if settings.USE_TZ and timezone.is_aware(dt) else dt.day) for dt in qs if dt}
-        )
+        self.day_entries = [
+            date.day
+            for date in Entry.published.filter(
+                publication_date__year=theyear, publication_date__month=themonth
+            ).datetimes("publication_date", "day")
+        ]
         v = []
         a = v.append
         a(f"""<table class="{self.day_entries and 'entries-calendar' or 'no-entries-calendar'}">""")

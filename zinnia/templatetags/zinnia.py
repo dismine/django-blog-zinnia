@@ -10,7 +10,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
 from django.db.models import Q
-from django.db.models.functions import TruncMonth
 from django.template import Library
 from django.template.defaultfilters import stringfilter
 from django.template.loader import select_template
@@ -149,30 +148,7 @@ def get_archives_entries(template="zinnia/tags/entries_archives.html"):
     """
     Return archives entries.
     """
-    # Replaces Entry.published.datetimes("publication_date", "month", order="DESC")
-    # datetimes() doesn't work with django-parler
-    qs = Entry.published.filter(publication_date__isnull=False, publication_date__lte=timezone.now()).values_list(
-        "publication_date", flat=True
-    )
-
-    tz = timezone.get_current_timezone() if settings.USE_TZ else None
-
-    # Extract unique months
-    months = sorted(
-        {
-            (
-                # Use localtime only if datetime is aware and tz is set
-                timezone.localtime(dt, tz).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-                if tz and timezone.is_aware(dt)
-                else dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            )
-            for dt in qs
-            if dt
-        },
-        reverse=True,
-    )
-
-    return {"template": template, "archives": months}
+    return {"template": template, "archives": Entry.published.datetimes("publication_date", "month", order="DESC")}
 
 
 @register.inclusion_tag("zinnia/tags/dummy.html")
@@ -180,26 +156,7 @@ def get_archives_entries_tree(template="zinnia/tags/entries_archives_tree.html")
     """
     Return archives entries as a tree.
     """
-    qs = Entry.published.filter(publication_date__isnull=False, publication_date__lte=timezone.now()).values_list(
-        "publication_date", flat=True
-    )
-
-    tz = timezone.get_current_timezone() if settings.USE_TZ else None
-
-    # Extract all unique days with published entries
-    days = sorted(
-        {
-            (
-                timezone.localtime(dt, tz).replace(hour=0, minute=0, second=0, microsecond=0)
-                if tz and timezone.is_aware(dt)
-                else dt.replace(hour=0, minute=0, second=0, microsecond=0)
-            )
-            for dt in qs
-            if dt
-        }
-    )
-
-    return {"template": template, "archives": days}
+    return {"template": template, "archives": Entry.published.datetimes("publication_date", "day", order="ASC")}
 
 
 @register.inclusion_tag("zinnia/tags/dummy.html", takes_context=True)
@@ -225,15 +182,12 @@ def get_calendar_entries(context, year=None, month=None, template="zinnia/tags/e
     else:
         current_month = date(year, month, 1)
 
-    # Get all months with published entries
-    qs = (
-        Entry.published.filter(publication_date__isnull=False, publication_date__lte=timezone.now())
-        .annotate(month=TruncMonth("publication_date", tzinfo=timezone.get_current_timezone()))
-        .values_list("month", flat=True)
-        .distinct()
-        .order_by("month")
+    dates = list(
+        map(
+            lambda x: settings.USE_TZ and timezone.localtime(x).date() or x.date(),
+            Entry.published.datetimes("publication_date", "month"),
+        )
     )
-    dates = [dt.date() for dt in qs if dt]
 
     if current_month not in dates:
         dates.append(current_month)

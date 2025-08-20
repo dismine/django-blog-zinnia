@@ -1,12 +1,11 @@
 """Mixins for Zinnia archive views"""
 
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
-from django.conf import settings
-from django.utils import timezone
-
-from zinnia.managers import PUBLISHED
-from zinnia.settings import ALLOW_EMPTY, ALLOW_FUTURE, PAGINATION
+from zinnia.settings import ALLOW_EMPTY
+from zinnia.settings import ALLOW_FUTURE
+from zinnia.settings import PAGINATION
 
 
 class ArchiveMixin(object):
@@ -34,75 +33,35 @@ class PreviousNextPublishedMixin(object):
         with published entries.
         """
         previous_next = getattr(self, "previous_next", None)
-        if previous_next is not None:
-            return previous_next
 
-        print(f"date: {date}")
-        # Reference dates
-        date_year = datetime(date.year, 1, 1)
-        date_month = datetime(date.year, date.month, 1)
-        date_day = datetime(date.year, date.month, date.day)
-        date_next_week = date_day + timedelta(weeks=1)
+        if previous_next is None:
+            date_year = datetime(date.year, 1, 1)
+            date_month = datetime(date.year, date.month, 1)
+            date_day = datetime(date.year, date.month, date.day)
+            date_next_week = date_day + timedelta(weeks=1)
+            previous_next = {"year": [None, None], "week": [None, None], "month": [None, None], "day": [None, None]}
+            dates = self.get_queryset().datetimes("publication_date", "day", order="ASC")
+            for d in dates:
+                d_year = datetime(d.year, 1, 1)
+                d_month = datetime(d.year, d.month, 1)
+                d_day = datetime(d.year, d.month, d.day)
+                if d_year < date_year:
+                    previous_next["year"][0] = d_year.date()
+                elif d_year > date_year and not previous_next["year"][1]:
+                    previous_next["year"][1] = d_year.date()
+                if d_month < date_month:
+                    previous_next["month"][0] = d_month.date()
+                elif d_month > date_month and not previous_next["month"][1]:
+                    previous_next["month"][1] = d_month.date()
+                if d_day < date_day:
+                    previous_next["day"][0] = d_day.date()
+                    previous_next["week"][0] = d_day.date() - timedelta(days=d_day.weekday())
+                elif d_day > date_day and not previous_next["day"][1]:
+                    previous_next["day"][1] = d_day.date()
+                if d_day > date_next_week and not previous_next["week"][1]:
+                    previous_next["week"][1] = d_day.date() - timedelta(days=d_day.weekday())
 
-        previous_next = {"year": [None, None], "week": [None, None], "month": [None, None], "day": [None, None]}
-
-        # Replaces dates = self.get_queryset().datetimes("publication_date", "day", order="ASC")
-        # datetimes() doesn't work with django-parler
-
-        # Get all published entries with a valid date
-        qs = (
-            self.get_queryset()
-            .filter(
-                status=PUBLISHED,
-                publication_date__isnull=False,
-                publication_date__lte=timezone.now(),
-            )
-            .values_list("publication_date", flat=True)
-        )
-
-        # Extract actual publication dates
-        dates = []
-        tz = timezone.get_current_timezone() if settings.USE_TZ else None
-
-        for dt in qs:
-            if dt:
-                if tz:
-                    dt = timezone.localtime(dt, tz)
-                dates.append(dt.date())  # extract day in local TZ
-
-        dates = sorted(set(dates))
-
-        for d in dates:
-            # Build day/month/year datetime objects for comparison
-            d_day = datetime(d.year, d.month, d.day)
-            d_month = datetime(d.year, d.month, 1)
-            d_year = datetime(d.year, 1, 1)
-            week_start = d_day.date() - timedelta(days=d_day.weekday())
-
-            # Year
-            if d_year < date_year:
-                previous_next["year"][0] = d_year.date()
-            elif d_year > date_year and previous_next["year"][1] is None:
-                previous_next["year"][1] = d_year.date()
-
-            # Month
-            if d_month < date_month:
-                previous_next["month"][0] = d_month.date()
-            elif d_month > date_month and previous_next["month"][1] is None:
-                previous_next["month"][1] = d_month.date()
-
-            # Day
-            if d_day < date_day:
-                previous_next["day"][0] = d_day.date()
-                previous_next["week"][0] = week_start
-            elif d_day > date_day and previous_next["day"][1] is None:
-                previous_next["day"][1] = d_day.date()
-
-            # Week
-            if d_day > date_next_week and previous_next["week"][1] is None:
-                previous_next["week"][1] = week_start
-
-        setattr(self, "previous_next", previous_next)
+            setattr(self, "previous_next", previous_next)
         return previous_next
 
     def get_next_year(self, date):
