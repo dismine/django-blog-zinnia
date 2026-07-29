@@ -40,7 +40,7 @@ jobs:
           --health-retries 5    
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -52,7 +52,7 @@ jobs:
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.django_version }}-${{ matrix.database }}-${{ matrix.container }}-${{ hashFiles('**/poetry.lock') }}
