@@ -1,3 +1,8 @@
+0.25.1+dismine.2 - 2026/07/29:
+------------------------------
+* Require pillow >= 12.3 and drop the upper version cap (fixes 12 CVEs in 10.4.0;
+  zinnia only uses Django's ImageField, never the PIL API directly).
+
 0.25.1+dismine.1 - 2025/08/19:
 ------------------------------
 * Revert change with datetimes() method
