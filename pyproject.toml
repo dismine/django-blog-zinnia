@@ -86,6 +86,7 @@ pytest-cov = "^6.1.1"
 black = "^25.1.0"
 flake8-import-order = "^0.19.2"
 pep8-naming = "^0.15.1"
+safety = "^3.8.1"
 
 
 [tool.poetry.group.docs.dependencies]
