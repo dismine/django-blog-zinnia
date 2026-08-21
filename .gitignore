@@ -20,3 +20,5 @@ demo/demo.db*
 django_blog_zinnia.egg-info/
 .idea/
 /env/
+.claude/
+.serena/
