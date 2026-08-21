@@ -1,6 +1,8 @@
 0.25.1+dismine.3 - 2026/08/21:
 ------------------------------
 * Require sqlparse >= 0.6.0 and regex >= 2025.7.29 (fixes 5 CVEs flagged by Safety).
+* Require django-xmlrpc >= 0.2.0+dismine.2, which drops its own runtime pin on black < 26,
+  unblocking a black upgrade that fixes a Safety-flagged CVE.
 
 0.25.1+dismine.2 - 2026/07/29:
 ------------------------------
